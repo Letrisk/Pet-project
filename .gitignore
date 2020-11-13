@@ -3,4 +3,4 @@
 /Client/obj/*
 /Server/bin/*
 /Server/obj/*
-.vs/Pet Project/v16/.suo
+*.cache
