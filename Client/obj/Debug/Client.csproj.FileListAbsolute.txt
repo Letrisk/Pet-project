@@ -1,0 +1,30 @@
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\bin\Debug\Pet Project.exe.config
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\bin\Debug\Pet Project.exe
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\bin\Debug\Pet Project.pdb
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Client.csprojAssemblyReference.cache
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\MainWindow.g.cs
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\App.g.cs
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet Project_MarkupCompile.cache
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet Project_MarkupCompile.lref
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\MainWindow.baml
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet Project.g.resources
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet_Project.Properties.Resources.resources
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet Project.exe
+C:\Users\VasyutkinKP\source\repos\Pet Project\Pet Project\obj\Debug\Pet Project.pdb
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\bin\Debug\Pet Project.exe.config
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\bin\Debug\Pet Project.exe
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\bin\Debug\Pet Project.pdb
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Client.csprojAssemblyReference.cache
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\MainWindow.g.cs
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\App.g.cs
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet Project_MarkupCompile.cache
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet Project_MarkupCompile.lref
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\MainWindow.baml
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet Project.g.resources
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet_Project.Properties.Resources.resources
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet Project.exe
+C:\Users\VasyutkinKP\Documents\GitHub\Pet-project\Pet Project\obj\Debug\Pet Project.pdb
