@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Pet_Project.View.ChatView"
+             x:Name="ChatV"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Pet_Project.View"
+             xmlns:viewModel="clr-namespace:Pet_Project.ViewModel"
+             xmlns:interactivity="http://prismlibrary.com/"
+             interactivity:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="760"
+             Width="760" Height="450"
+             d:DataContext="{d:DesignInstance viewModel:ViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.2*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.2*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+            <ColumnDefinition Width="0.8*"></ColumnDefinition>
+            <ColumnDefinition Width="0.11*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Content="Event Log"></Button>
+        <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="3" Margin="5,5,5,5" Content="Disconnect"></Button>
+        <Label  Grid.Row="1" Grid.Column="0" Content="Clients" FontSize="16"></Label>
+        <Label Grid.Row="1" Grid.Column="2" Content="IP Port Login" FontSize="16"></Label>
+        <ListBox x:Name="clients" Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Margin="5,0,10,5"></ListBox>
+        <TextBox x:Name="messages" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="0, 0, 5, 5"></TextBox>
+        <TextBox x:Name="message" Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Margin="0, 5, 5, 5"></TextBox>
+        <Button x:Name="buttonSend" Grid.Row="4" Grid.Column="3" Content="Send" Margin="5"></Button>
+    </Grid>
+</UserControl>

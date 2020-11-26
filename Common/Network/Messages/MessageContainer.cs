@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Network.Messages
 {
-    class MessageContainer
+    public class MessageContainer
     {
         #region Properties
 

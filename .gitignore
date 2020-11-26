@@ -1,10 +1,11 @@
 $ cat .gitignore
 
-/.vs/*
-Client/bin/Debug/Pet Project.exe
+.vs/*
 Client/bin/
 Client/obj/
 Server/bin/
 Server/obj/
+Common/bin/
+Common/obj/
 *.exe
 *.cache

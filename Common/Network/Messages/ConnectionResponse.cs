@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Network.Messages
+﻿namespace Common.Network.Messages
 {
+    using System;
+
+    using Common.Network._Enums_;
     class ConnectionResponse
     {
         #region Properties
@@ -13,6 +10,12 @@ namespace Common.Network.Messages
         public ResultCodes Result { get; set; }
 
         public string Reason { get; set; }
+
+        public bool IsSuccessful { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public string[] OnlineClients { get; set; }
 
         #endregion Properties
 

@@ -1,15 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Server
+﻿namespace Server
 {
+    using System;
+
     class Program
     {
         static void Main(string[] args)
         {
+            try
+            {
+                var networkManager = new NetworkManager();
+                networkManager.Start();
+
+                Console.ReadLine();
+
+                networkManager.Stop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.ReadLine();
+            }
         }
     }
 }
