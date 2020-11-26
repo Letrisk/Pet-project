@@ -1,7 +1,7 @@
 $ cat .gitignore
 
 /.vs/*
-Client/bin/
+Client/bin/Debug/Pet Project.exe
 Client/obj/
 Server/bin/
 Server/obj/
