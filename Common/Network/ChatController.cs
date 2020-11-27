@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.ObjectModel;
     using System.Threading;
 
     using WebSocketSharp;
@@ -12,22 +13,78 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class WsController : IController
+    public class ChatController : IChatController
     {
         #region Fields
 
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
 
+        //private ObservableCollection<string> _clientsList;
+
         private WebSocket _socket;
 
         private int _sending;
         private string _login;
+        private bool _isEnable;
 
         #endregion Fields
 
         #region Properties
 
         public bool IsConnected => _socket?.ReadyState == WebSocketState.Open;
+
+        public WebSocket Socket
+        {
+            get => _socket;
+            set
+            {
+                _socket = value;
+                _socket.OnOpen += OnOpen;
+                _socket.OnMessage += OnMessage;
+                _socket.OnClose += OnClose;
+            }
+        }
+
+        /*public ObservableCollection<string> ClientsList
+        {
+            get => _clientsList;
+            set
+            {
+                _clientsList = value;
+            }
+        }*/
+
+        public ConcurrentQueue<MessageContainer> SendQueue
+        {
+            get => _sendQueue;
+        }
+
+        public int Sending
+        {
+            get => _sending;
+            set
+            {
+                _sending = value;
+            }
+        }
+
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                _login = value;
+            }
+        }
+
+        public bool IsEnable
+        {
+            get => _isEnable;
+            set
+            {
+                _isEnable = value;
+            }
+        }
 
         #endregion Properties
 
@@ -41,7 +98,7 @@
 
         #region Constructors
 
-        public WsController()
+        public ChatController()
         {
             _sendQueue = new ConcurrentQueue<MessageContainer>();
             _sending = 0;
@@ -50,15 +107,6 @@
         #endregion Constructors
 
         #region Methods
-
-        public void Connect (string address, string port)
-        {
-            _socket = new WebSocket($"ws://{address}:{port}");
-            _socket.OnOpen += OnOpen;
-            _socket.OnClose += OnClose;
-            _socket.OnMessage += OnMessage;
-            _socket.ConnectAsync();
-        }
 
         public void Disconnect()
         {
@@ -74,15 +122,6 @@
 
             _socket = null;
             _login = string.Empty;
-        }
-
-        public void Login (string login)
-        {
-            _login = login;
-            _sendQueue.Enqueue(new ConnectionRequest(_login).GetContainer());
-
-            if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
-                SendImpl();
         }
 
         public void Send(string source, string target, string message)

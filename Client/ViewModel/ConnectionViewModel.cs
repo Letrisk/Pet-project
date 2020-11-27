@@ -12,8 +12,6 @@
     using Prism.Mvvm;
 
     using Common.Network;
-    using Common.Network._Enums_;
-    using Common.Network._EventArgs_;
     using View;
     using Common.Network.Messages;
 
@@ -28,6 +26,9 @@
         #region Fields
 
         private IController _currentController;
+        private IConnectionController _connectionController;
+
+        private Visibility _connectionVisibility = Visibility.Visible;
 
         private string _currentAddress = "192.168.37.147", _currentPort = "65000", _currentLogin, _guideText = "Введите адрес и порт";
 
@@ -36,6 +37,12 @@
         #endregion Fields
 
         #region Properties
+
+        public Visibility ConnectionVisibility
+        {
+            get => _connectionVisibility;
+            set => SetProperty(ref _connectionVisibility, value);
+        }
 
         public string CurrentAddress
         {
@@ -75,8 +82,9 @@
 
         #region Constructors
 
-        public ConnectionViewModel()
+        public ConnectionViewModel(IConnectionController connectionController)
         {
+            _connectionController = connectionController;
             StartCommand = new DelegateCommand(ExecuteStartCommand);
             LoginCommand = new DelegateCommand(ExecuteLoginCommand);
         }
@@ -87,11 +95,13 @@
 
         private void ExecuteStartCommand()
         {
+            _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;
+            _connectionController?.Disconnect();
+
             try
             {
-                _currentController = ControllerFactory.Create(CurrentTransport);
-                _currentController.ConnectionStateChanged += HandleConnectionStateChanged;
-                _currentController.Connect(CurrentAddress, CurrentPort);
+                _connectionController.ConnectionStateChanged += HandleConnectionStateChanged;
+                _connectionController.Connect(CurrentAddress, CurrentPort);
             }
 
             catch (Exception ex)
@@ -102,8 +112,7 @@
 
         private void ExecuteLoginCommand()
         {
-            _currentController?.Login(CurrentLogin);
-            NavigationViewModel navMod = new NavigationViewModel { SelectedViewModel = new ChatViewModel()};
+            _connectionController?.Login(CurrentLogin);
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -120,6 +129,7 @@
                 {
                     GuideText = $"Авторизация выполнена успешно.\n";
 
+                    ConnectionVisibility = Visibility.Collapsed;
                     /*App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         foreach (object client in e.OnlineClients)
@@ -132,7 +142,12 @@
             }
             else
             {
-                GuideText = $"Клиент отключен от сервера.\n";
+                GuideText = "Введите адрес и порт";
+                CurrentLogin = null;
+                IsLoginEnable = false;
+                _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;
+
+                ConnectionVisibility = Visibility.Visible;
             }
         }
 

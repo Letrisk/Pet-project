@@ -12,8 +12,6 @@
     using Prism.Mvvm;
 
     using Common.Network;
-    using Common.Network._Enums_;
-    using Common.Network._EventArgs_;
     using View;
     using Common.Network.Messages;
 
@@ -21,34 +19,34 @@
     {
         #region Fields
 
-        private object _selectedViewModel;
+        //private object _selectedViewModel;
 
-        private ConnectionViewModel _connectionControl = new ConnectionViewModel();
-        private ChatViewModel _chatControl = new ChatViewModel();
+        //private ConnectionViewModel _connectionControl = new ConnectionViewModel();
+        //private ChatViewModel _chatControl = new ChatViewModel();
 
         #endregion Fields
 
         #region Properties
 
-        public object SelectedViewModel
+        /*public object SelectedViewModel
         {
             get => _selectedViewModel;
             set => SetProperty(ref _selectedViewModel, value);
-        }
+        }*/
 
-        public ConnectionViewModel ConnectionControl
+        /*public ConnectionViewModel ConnectionControl
         {
             get => _connectionControl;
             set => SetProperty(ref _connectionControl, value);
-        }
+        }*/
 
-        public ChatViewModel ChatControl
+        /*public ChatViewModel ChatControl
         {
             get => _chatControl;
             set => SetProperty(ref _chatControl, value);
-        }
+        }*/
 
-        public DelegateCommand EnterChatCommand { get; }
+        //public DelegateCommand EnterChatCommand { get; }
 
         #endregion Properties
 
@@ -56,19 +54,18 @@
 
         public NavigationViewModel()
         {
-            SelectedViewModel = ConnectionControl;
+            //SelectedViewModel = ConnectionControl;
 
-            EnterChatCommand = new DelegateCommand(ExecuteEnterChatCommand);
+            //EnterChatCommand = new DelegateCommand(ExecuteEnterChatCommand);
         }
 
         #endregion Constructors
 
         #region Methods
 
-        private void ExecuteEnterChatCommand()
+        /*private void ExecuteEnterChatCommand()
         {
-            SelectedViewModel = ChatControl;
-        }
+        }*/
 
         #endregion Methods
     }

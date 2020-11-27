@@ -2,7 +2,7 @@
 {
     using System;
 
-    using Common.Network._Enums_;
+    using Common.Network;
 
     public static class ControllerFactory
     {

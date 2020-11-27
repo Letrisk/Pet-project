@@ -2,13 +2,13 @@
 {
     using System;
 
-    public interface IController
+    using WebSocketSharp;
+
+    public interface IConnectionController
     {
         #region Events
 
         event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
-        event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
-        event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         #endregion Events
 
@@ -19,8 +19,6 @@
         void Disconnect();
 
         void Login(string login);
-
-        void Send(string source, string target, string message);
 
         #endregion Methods
     }

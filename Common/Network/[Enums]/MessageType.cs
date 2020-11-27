@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Network._Enums_
+namespace Common.Network
 {
     public enum MessageType
     {

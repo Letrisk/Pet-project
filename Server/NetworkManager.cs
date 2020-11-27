@@ -4,7 +4,6 @@
     using System.Net;
 
     using Common.Network;
-    using Common.Network._EventArgs_;
 
     public class NetworkManager
     {

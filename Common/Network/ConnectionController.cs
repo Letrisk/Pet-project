@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.ObjectModel;
     using System.Threading;
 
     using WebSocketSharp;
@@ -11,12 +12,13 @@
 
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-
-    public class WsController : IController
+    public class ConnectionController : IConnectionController
     {
         #region Fields
 
         private readonly ConcurrentQueue<MessageContainer> _sendQueue;
+
+        private readonly IChatController _chatController;
 
         private WebSocket _socket;
 
@@ -41,8 +43,10 @@
 
         #region Constructors
 
-        public WsController()
+        public ConnectionController(IChatController chatController)
         {
+            _chatController = chatController;
+
             _sendQueue = new ConcurrentQueue<MessageContainer>();
             _sending = 0;
         }
@@ -51,13 +55,15 @@
 
         #region Methods
 
-        public void Connect (string address, string port)
+        public void Connect(string address, string port)
         {
             _socket = new WebSocket($"ws://{address}:{port}");
             _socket.OnOpen += OnOpen;
             _socket.OnClose += OnClose;
             _socket.OnMessage += OnMessage;
             _socket.ConnectAsync();
+
+            _chatController.Socket = _socket;
         }
 
         public void Disconnect()
@@ -76,18 +82,10 @@
             _login = string.Empty;
         }
 
-        public void Login (string login)
+        public void Login(string login)
         {
             _login = login;
             _sendQueue.Enqueue(new ConnectionRequest(_login).GetContainer());
-
-            if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
-                SendImpl();
-        }
-
-        public void Send(string source, string target, string message)
-        {
-            _sendQueue.Enqueue(new MessageRequest(source, target, message).GetContainer());
 
             if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
                 SendImpl();
@@ -136,6 +134,15 @@
                         string source = string.Empty;
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs(source, _login, connectionResponse.Reason, connectionResponse.Date));
                     }
+
+                    _chatController.Sending = _sending;
+                    _chatController.Login = _login;
+                    _chatController.IsEnable = true;
+                    //_chatController.ClientsList = new ObservableCollection<string>(connectionResponse.OnlineClients);
+                    _chatController.ConnectionStateChanged += ConnectionStateChanged;
+                    _chatController.ConnectionReceived += ConnectionReceived;
+                    _chatController.MessageReceived += MessageReceived;
+
                     ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true, connectionResponse.OnlineClients));
                     break;
                 case nameof(ConnectionBroadcast):

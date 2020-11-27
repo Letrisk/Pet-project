@@ -12,8 +12,6 @@
     using Prism.Mvvm;
 
     using Common.Network;
-    using Common.Network._Enums_;
-    using Common.Network._EventArgs_;
     using Common.Network.Messages;
 
     public class ViewModel : BindableBase

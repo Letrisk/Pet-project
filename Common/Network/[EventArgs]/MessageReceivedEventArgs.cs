@@ -1,4 +1,4 @@
-﻿namespace Common.Network._EventArgs_
+﻿namespace Common.Network
 {
     using System;
 

@@ -41,7 +41,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\ChatController.cs" />
+    <Compile Include="Network\ConnectionController.cs" />
     <Compile Include="Network\ControllerFactory.cs" />
+    <Compile Include="Network\IChatController.cs" />
+    <Compile Include="Network\IConnectionController.cs" />
     <Compile Include="Network\IController.cs" />
     <Compile Include="Network\Messages\ConnectionBroadcast.cs" />
     <Compile Include="Network\Messages\ConnectionRequest.cs" />

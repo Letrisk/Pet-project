@@ -6,8 +6,7 @@
     using System.Net;
 
     using Messages;
-    using _EventArgs_;
-    using _Enums_;
+    using Network;
 
     using Newtonsoft.Json.Linq;
 
@@ -74,7 +73,7 @@
         {
             var messageBroadcast = new MessageBroadcast(source, target, message, DateTime.Now).GetContainer();
 
-            if (target == null)
+            if (string.IsNullOrEmpty(target))
             {
                 foreach (var connection in _connections)
                 {
@@ -85,7 +84,7 @@
             {
                 foreach (var connection in _connections)
                 {
-                    if (connection.Value.Login == target)
+                    if (connection.Value.Login == target || connection.Value.Login == source)
                     {
                         connection.Value.Send(messageBroadcast);
                     }
@@ -144,9 +143,9 @@
             _connections.TryAdd(connection.Id, connection);
         }
 
-        internal void FreeConnection(Guid connectionId)
+        internal void FreeConnection(Guid id)
         {
-            if (_connections.TryRemove(connectionId, out WsConnection connection) && !string.IsNullOrEmpty(connection.Login))
+            if (_connections.TryRemove(id, out WsConnection connection) && !string.IsNullOrEmpty(connection.Login))
             {
                 ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, false));
                 ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connection.Login, false, DateTime.Now));
