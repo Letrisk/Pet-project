@@ -25,7 +25,7 @@
 
         private Dictionary<string, string> _chats = new Dictionary<string, string>() { { "General", String.Empty } };
 
-        private string _currentMessage, _chatMessages, _currentTarget = "General", _connectionParametres; //если currentTarget отключается, то происходит краш
+        private string _currentMessage, _chatMessages, _currentTarget = "General", _connectionParametres;
 
         private Visibility _chatVisibility = Visibility.Collapsed;
 
@@ -68,12 +68,13 @@
             get => _currentTarget;
             set
             {
-                
-                SetProperty(ref _currentTarget, value);
-
-                if (_currentTarget == null)
+                if (value == null)
                 {
-                    _currentTarget = "General";
+                    SetProperty(ref _currentTarget, "General");
+                }
+                else
+                {
+                    SetProperty(ref _currentTarget, value);
                 }
 
                 ChatMessages = _chats[_currentTarget];
@@ -206,8 +207,16 @@
             }
             else
             {
-                Chats[e.Source] += $"{e.Date} {e.Source} : {e.Message}\n";
-                ChatMessages = Chats[e.Source];
+                if (_chatController.Login == e.Source)
+                {
+                    Chats[e.Target] += $"{e.Date} {e.Source} : {e.Message}\n";
+                    ChatMessages = Chats[e.Target];
+                }
+                else
+                {
+                    Chats[e.Source] += $"{e.Date} {e.Source} : {e.Message}\n";
+                    ChatMessages = Chats[e.Source];
+                }
             }
         }
 
