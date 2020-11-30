@@ -25,7 +25,6 @@
 
         #region Fields
 
-        private IController _currentController;
         private IConnectionController _connectionController;
 
         private Visibility _connectionVisibility = Visibility.Visible;

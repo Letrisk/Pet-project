@@ -21,9 +21,9 @@
 
         private IChatController _chatController;
 
-        private ObservableCollection<string> _clientsList = new ObservableCollection<string>(){ "General" };
+        private ObservableCollection<string> _clientsList = new ObservableCollection<string>()/*{ "General" }*/;
 
-        private Dictionary<string, string> _chats = new Dictionary<string, string>() { { "General", String.Empty } };
+        private Dictionary<string, string> _chats = new Dictionary<string, string>()/* { { "General", String.Empty } }*/;
 
         private string _currentMessage, _chatMessages, _currentTarget = "General", _connectionParametres;
 
@@ -53,7 +53,8 @@
 
         public string ChatMessages
         {
-            get => _chats[_currentTarget];
+            //get => _chats[_currentTarget];
+            get => _chatMessages;
             set => SetProperty(ref _chatMessages, value);
         }
 
@@ -71,6 +72,7 @@
                 if (value == null)
                 {
                     SetProperty(ref _currentTarget, "General");
+                    return;
                 }
                 else
                 {
@@ -133,7 +135,10 @@
             {
                 _chatController.Disconnect();
                 ClientsList.Clear();
-                ClientsList.Add("General");
+                ChatMessages = String.Empty;
+                Chats.Clear();
+                ChatVisibility = Visibility.Collapsed;
+                //ClientsList.Add("General");
             }
         }
 
@@ -141,6 +146,15 @@
         {
             if (e.IsConnected)
             {
+                if (!ClientsList.Contains("General"))
+                {
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ClientsList.Add("General");
+                    });
+                    Chats.Add("General", String.Empty);
+                }
+
                 if (string.IsNullOrEmpty(e.Client))
                 {
                     Chats["General"] += $"Авторизуйтесь, чтобы отправлять сообщения.\n";
@@ -152,6 +166,7 @@
 
                     Chats["General"] += $"Авторизация выполнена успешно.\n";
                     ChatMessages = Chats["General"];
+                    ConnectionParametres = $"Login: {_chatController.Login}";
 
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
@@ -166,7 +181,7 @@
             }
             else
             {
-                ChatVisibility = Visibility.Collapsed;
+                //ChatVisibility = Visibility.Collapsed;
             }
         }
 
