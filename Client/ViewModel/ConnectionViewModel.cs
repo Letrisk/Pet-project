@@ -100,6 +100,7 @@
             try
             {
                 _connectionController.ConnectionStateChanged += HandleConnectionStateChanged;
+                _connectionController.ErrorReceived += HandleErrorReceived;
                 _connectionController.Connect(CurrentAddress, CurrentPort);
             }
 
@@ -141,13 +142,18 @@
             }
             else
             {
-                GuideText = "Введите адрес и порт";
-                CurrentLogin = null;
+                //GuideText = "Введите адрес и порт";
+                CurrentLogin = String.Empty;
                 IsLoginEnable = false;
                 _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;
 
                 ConnectionVisibility = Visibility.Visible;
             }
+        }
+
+        private void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
+        {
+            CurrentLogin = e.Reason;
         }
 
         #endregion Methods

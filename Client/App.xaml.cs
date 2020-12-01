@@ -26,6 +26,7 @@
             containerRegistry.Register<ViewModel.ViewModel>();
             containerRegistry.Register<ConnectionViewModel>();
             containerRegistry.Register<ChatViewModel>();
+            containerRegistry.Register<EventLogViewModel>();
             containerRegistry.Register<NavigationViewModel>();
         }
 
@@ -36,6 +37,7 @@
             BindViewModelToView<NavigationViewModel, MainWindow>();
             BindViewModelToView<ConnectionViewModel, ConnectionView>();
             BindViewModelToView<ChatViewModel, ChatView>();
+            BindViewModelToView<EventLogViewModel, EventLogView>();
         }
 
         protected override Window CreateShell()

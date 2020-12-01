@@ -1,12 +1,12 @@
 ﻿namespace Common.Network
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Net;
 
     using Messages;
-    using Network;
 
     using Newtonsoft.Json.Linq;
 
@@ -28,6 +28,8 @@
         public event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
         public event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<ErrorReceivedEventArgs> ErrorReceived;
+        public event EventHandler<FilterReceivedEventArgs> FilterReceived;
 
         #endregion Events
 
@@ -102,6 +104,18 @@
             }
         }
 
+        public void SendChatHistory (string login, Dictionary<string,string> chatHistory)
+        {
+            var chatHistoryResponse = new ChatHistoryResponse(chatHistory).GetContainer();
+
+            foreach(var connection in _connections)
+            {
+                if(connection.Value.Login == login)
+                {
+                    connection.Value.Send(chatHistoryResponse);
+                }
+            }
+        }
 
         internal void HandleMessage(Guid clientId, MessageContainer container)
         {
@@ -117,10 +131,12 @@
                                                                     };
                     if (_connections.Values.Any(item => item.Login == connectionRequest.Login))
                     {
+                        string reason = $"Клиент с именем '{connectionRequest.Login}' уже подключен.";
                         connectionResponse.Result = ResultCodes.Failure;
                         connectionResponse.IsSuccessful = false;
-                        connectionResponse.Reason = $"Клиент с именем '{connectionRequest.Login}' уже подключен.";
+                        connectionResponse.Reason = reason;
                         connection.Send(connectionResponse.GetContainer());
+                        ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs(reason, DateTime.Now));
                     }
                     else
                     {
@@ -134,6 +150,10 @@
                 case nameof(MessageRequest):
                     var messageRequest = ((JObject)container.Payload).ToObject(typeof(MessageRequest)) as MessageRequest;
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageRequest.Source, messageRequest.Target, messageRequest.Message, DateTime.Now));
+                    break;
+                case nameof(FilterRequest):
+                    var filterRequest = ((JObject)container.Payload).ToObject(typeof(FilterRequest)) as FilterRequest;
+                    FilterReceived?.Invoke(this, new FilterReceivedEventArgs(filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
                     break;
             }
         }

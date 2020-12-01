@@ -1,4 +1,9 @@
-﻿namespace Pet_Project.ViewModel
+﻿
+/// <summary>
+/// НЕ ИСПОЛЬЗУЕТСЯ
+/// </summary>
+
+namespace Pet_Project.ViewModel
 {
     using System;
     using System.Windows;

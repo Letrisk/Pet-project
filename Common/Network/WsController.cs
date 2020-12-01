@@ -1,4 +1,9 @@
-﻿namespace Common.Network
+﻿
+/// <summary>
+/// НЕ ИСПОЛЬЗУЕТСЯ
+/// </summary>
+
+namespace Common.Network
 {
     using System;
     using System.Collections.Concurrent;

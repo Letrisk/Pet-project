@@ -18,6 +18,9 @@
         <DataTemplate DataType="{x:Type viewModel:ChatViewModel}">
             <view:ChatView></view:ChatView>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:EventLogViewModel}">
+            <view:EventLogView></view:EventLogView>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -32,5 +35,6 @@
         <Button Grid.Row="1" Content="Enter" Command="{Binding EnterChatCommand}"></Button>-->
         <view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
         <view:ChatView Grid.Row="1" Visibility="{Binding ChatVisibility}"></view:ChatView>
+        <view:EventLogView Grid.Row="0" Grid.Column="1" Visibility="{Binding EventLogVisibility}"></view:EventLogView>
     </Grid>
 </Window>

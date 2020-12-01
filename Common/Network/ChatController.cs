@@ -45,44 +45,12 @@
             }
         }
 
-        /*public ObservableCollection<string> ClientsList
-        {
-            get => _clientsList;
-            set
-            {
-                _clientsList = value;
-            }
-        }*/
-
-        public ConcurrentQueue<MessageContainer> SendQueue
-        {
-            get => _sendQueue;
-        }
-
-        public int Sending
-        {
-            get => _sending;
-            set
-            {
-                _sending = value;
-            }
-        }
-
         public string Login
         {
             get => _login;
             set
             {
                 _login = value;
-            }
-        }
-
-        public bool IsEnable
-        {
-            get => _isEnable;
-            set
-            {
-                _isEnable = value;
             }
         }
 
@@ -93,6 +61,7 @@
         public event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
         public event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
 
         #endregion Events
 
@@ -134,7 +103,6 @@
 
         private void SendCompleted(bool completed)
         {
-            // При отправке произошла ошибка.
             if (!completed)
             {
                 Disconnect();
@@ -184,6 +152,10 @@
                 case nameof(MessageBroadcast):
                     var messageBroadcast = ((JObject)container.Payload).ToObject(typeof(MessageBroadcast)) as MessageBroadcast;
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBroadcast.Source, messageBroadcast.Target, messageBroadcast.Message, messageBroadcast.Date));
+                    break;
+                case nameof(ChatHistoryResponse):
+                    var chatHistoryResponse = ((JObject)container.Payload).ToObject(typeof(ChatHistoryResponse)) as ChatHistoryResponse;
+                    ChatHistoryReceived?.Invoke(this, new ChatHistoryReceivedEventArgs(chatHistoryResponse.ClientMessages));
                     break;
             }
         }

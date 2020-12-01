@@ -11,6 +11,7 @@
 
     using Prism.Commands;
     using Prism.Mvvm;
+    using Prism.Events;
 
     using Common.Network;
     using Common.Network.Messages;
@@ -20,10 +21,11 @@
         #region Fields
 
         private IChatController _chatController;
+        private IEventAggregator _eventAggregator;
 
-        private ObservableCollection<string> _clientsList = new ObservableCollection<string>()/*{ "General" }*/;
+        private ObservableCollection<string> _clientsList = new ObservableCollection<string>();
 
-        private Dictionary<string, string> _chats = new Dictionary<string, string>()/* { { "General", String.Empty } }*/;
+        private Dictionary<string, string> _chats = new Dictionary<string, string>();
 
         private string _currentMessage, _chatMessages, _currentTarget = "General", _connectionParametres;
 
@@ -53,7 +55,6 @@
 
         public string ChatMessages
         {
-            //get => _chats[_currentTarget];
             get => _chatMessages;
             set => SetProperty(ref _chatMessages, value);
         }
@@ -93,22 +94,27 @@
 
         public DelegateCommand StopCommand { get; }
 
-        public DelegateCommand SendPrivateCommand { get; }
+        public DelegateCommand OpenEventLogCommand { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ChatViewModel(IChatController chatController)
+        public ChatViewModel(IChatController chatController, IEventAggregator eventAggregator)
         {
             _chatController = chatController;
+            _eventAggregator = eventAggregator;
+
+            eventAggregator.GetEvent<OpenChatEventArgs>().Subscribe(HandleOpenChat);
 
             SendCommand = new DelegateCommand(ExecuteSendCommand);
             StopCommand = new DelegateCommand(ExecuteStopCommand);
+            OpenEventLogCommand = new DelegateCommand(ExecuteOpenEventLogCommand);
 
             _chatController.ConnectionStateChanged += HandleConnectionStateChanged;
             _chatController.ConnectionReceived += HandleConnectionReceived;
             _chatController.MessageReceived += HandleMessageReceived;
+            _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
         }
 
         #endregion Constructors
@@ -138,8 +144,13 @@
                 ChatMessages = String.Empty;
                 Chats.Clear();
                 ChatVisibility = Visibility.Collapsed;
-                //ClientsList.Add("General");
             }
+        }
+
+        private void ExecuteOpenEventLogCommand()
+        {
+            _eventAggregator.GetEvent<OpenEventLogEventArgs>().Publish();
+            ChatVisibility = Visibility.Collapsed;
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -172,16 +183,16 @@
                     {
                         foreach (object client in e.OnlineClients)
                         {
-                            Chats.Add((string)client, String.Empty);
+                            if (!Chats.ContainsKey((string)client))
+                            {
+                                Chats.Add((string)client, String.Empty);
+                            }
+                            
                             ClientsList.Add((string)client);
                         }
 
                     });
                 }
-            }
-            else
-            {
-                //ChatVisibility = Visibility.Collapsed;
             }
         }
 
@@ -233,6 +244,19 @@
                     ChatMessages = Chats[e.Source];
                 }
             }
+        }
+
+        private void HandleChatHistoryReceived(object sender, ChatHistoryReceivedEventArgs e)
+        {
+            foreach(string client in e.ClientMessages.Keys)
+            {
+                Chats[client] = e.ClientMessages[client];
+            }
+        }
+
+        private void HandleOpenChat()
+        {
+            ChatVisibility = Visibility.Visible;
         }
 
         #endregion Methods

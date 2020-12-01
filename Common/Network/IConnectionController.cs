@@ -9,6 +9,7 @@
         #region Events
 
         event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
+        event EventHandler<ErrorReceivedEventArgs> ErrorReceived;
 
         #endregion Events
 

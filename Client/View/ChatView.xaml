@@ -26,7 +26,7 @@
             <ColumnDefinition Width="0.8*"></ColumnDefinition>
             <ColumnDefinition Width="0.11*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Content="Event Log"></Button>
+        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Command="{Binding OpenEventLogCommand}" Margin="5,5,5,5" Content="Event Log"></Button>
         <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="3" Margin="5,5,5,5" Content="Disconnect" Command="{Binding StopCommand}"></Button>
         <Label  Grid.Row="1" Grid.Column="0" Content="Clients" FontSize="16"></Label>
         <Label Grid.Row="1" Grid.Column="2" Content="{Binding ConnectionParametres}" VerticalContentAlignment="Top" FontSize="16"/>
