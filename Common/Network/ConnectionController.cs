@@ -143,6 +143,7 @@
 
                     //_chatController.Sending = _sending;
                     _chatController.Login = _login;
+                    _eventLogController.Login = _login;
                     //_chatController.IsEnable = true;
                     /*_chatController.ConnectionStateChanged += ConnectionStateChanged;
                     _chatController.ConnectionReceived += ConnectionReceived;

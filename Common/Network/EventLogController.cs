@@ -22,7 +22,7 @@
         private WebSocket _socket;
 
         private int _sending;
-        private bool _isEnable;
+        private string _login;
 
         #endregion Fields
 
@@ -36,6 +36,15 @@
             set
             {
                 _socket = value;
+            }
+        }
+
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                _login = value;
             }
         }
 
@@ -55,7 +64,7 @@
 
         public void SendFilterRequest(DateTime firstDate, DateTime secondDate, string[] messageTypes)
         {
-            _sendQueue.Enqueue(new FilterRequest(firstDate, secondDate, messageTypes).GetContainer());
+            _sendQueue.Enqueue(new FilterRequest(_login, firstDate, secondDate, messageTypes).GetContainer());
 
             if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
                 SendImpl();

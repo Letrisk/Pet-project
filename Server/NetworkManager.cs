@@ -98,7 +98,8 @@
 
         private void HandleFilterReceived(object sender, FilterReceivedEventArgs e)
         {
-
+            var filteredMessages = _clientEventService.GetClientEvents(e.FirstDate, e.SecondDate, e.MessageTypes);
+            _wsServer.SendFilteredMessages(e.Login, filteredMessages);
         }
 
         #endregion Methods

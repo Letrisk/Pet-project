@@ -25,7 +25,6 @@
 
         private int _sending;
         private string _login;
-        private bool _isEnable;
 
         #endregion Fields
 
@@ -62,6 +61,7 @@
         public event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
+        public event EventHandler<FilteredMessagesReceivedEventArgs> FilteredMessagesReceived;
 
         #endregion Events
 
@@ -156,6 +156,10 @@
                 case nameof(ChatHistoryResponse):
                     var chatHistoryResponse = ((JObject)container.Payload).ToObject(typeof(ChatHistoryResponse)) as ChatHistoryResponse;
                     ChatHistoryReceived?.Invoke(this, new ChatHistoryReceivedEventArgs(chatHistoryResponse.ClientMessages));
+                    break;
+                case nameof(FilterResponse):
+                    var filterResponse = ((JObject)container.Payload).ToObject(typeof(FilterResponse)) as FilterResponse;
+                    FilteredMessagesReceived?.Invoke(this, new FilteredMessagesReceivedEventArgs(filterResponse.FilteredMessages));
                     break;
             }
         }

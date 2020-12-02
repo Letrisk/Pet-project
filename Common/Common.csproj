@@ -54,6 +54,7 @@
     <Compile Include="Network\Messages\ConnectionRequest.cs" />
     <Compile Include="Network\Messages\ConnectionResponse.cs" />
     <Compile Include="Network\Messages\FilterRequest.cs" />
+    <Compile Include="Network\Messages\FilterResponse.cs" />
     <Compile Include="Network\Messages\MessageBroadcast.cs" />
     <Compile Include="Network\Messages\MessageContainer.cs" />
     <Compile Include="Network\Messages\MessageRequest.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Network\[EventArgs]\ConnectionReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ConnectionStateChangedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ErrorReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\FilteredMessagesReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\FilterReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\MessageReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\OpenChatEventArgs.cs" />

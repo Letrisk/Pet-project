@@ -84,13 +84,8 @@
     <Compile Include="ViewModel\ChatViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\EventLogViewModel.cs" />
-    <Compile Include="ViewModel\NavigationViewModel.cs" />
-    <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="View\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ClientView.xaml.cs">
-      <DependentUpon>ClientView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ConnectionView.xaml.cs">
       <DependentUpon>ConnectionView.xaml</DependentUpon>
@@ -111,10 +106,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\ChatView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ClientView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

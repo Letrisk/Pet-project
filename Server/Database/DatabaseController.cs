@@ -37,7 +37,7 @@
         {
             List<Message> messageLog = new List<Message>();
 
-            var messages = _messageDb.Messages.Where(m => m.Source == source || m.Target == source);
+            var messages = _messageDb.Messages.Where(m => m.Source == source || m.Target == source || String.IsNullOrEmpty(m.Target));
 
             foreach(Message msg in messages)
             {

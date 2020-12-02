@@ -20,21 +20,18 @@
     {
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<IController, WsController>();
             containerRegistry.RegisterSingleton<IConnectionController, ConnectionController>();
             containerRegistry.RegisterSingleton<IChatController, ChatController>();
-            containerRegistry.Register<ViewModel.ViewModel>();
+            containerRegistry.RegisterSingleton<IEventLogController, EventLogController>();
             containerRegistry.Register<ConnectionViewModel>();
             containerRegistry.Register<ChatViewModel>();
             containerRegistry.Register<EventLogViewModel>();
-            containerRegistry.Register<NavigationViewModel>();
         }
 
         protected override void ConfigureViewModelLocator()
         {
             base.ConfigureViewModelLocator();
 
-            BindViewModelToView<NavigationViewModel, MainWindow>();
             BindViewModelToView<ConnectionViewModel, ConnectionView>();
             BindViewModelToView<ChatViewModel, ChatView>();
             BindViewModelToView<EventLogViewModel, EventLogView>();

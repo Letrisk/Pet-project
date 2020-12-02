@@ -6,6 +6,8 @@
     {
         #region Properties
 
+        public string Login { get; set; }
+
         public DateTime FirstDate { get; set; }
         public DateTime SecondDate { get; set; }
 
@@ -15,8 +17,9 @@
 
         #region Constructors
 
-        public FilterRequest(DateTime firstDate, DateTime secondDate, string[] messageType)
+        public FilterRequest(string login, DateTime firstDate, DateTime secondDate, string[] messageType)
         {
+            Login = login;
             FirstDate = firstDate;
             SecondDate = secondDate;
             MessageTypes = messageType;
@@ -30,7 +33,7 @@
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(ConnectionRequest),
+                Identifier = nameof(FilterRequest),
                 Payload = this
             };
 

@@ -102,19 +102,25 @@
             {
                 connection.Value.Send(connectionBroadcast);
             }
+
         }
 
         public void SendChatHistory (string login, Dictionary<string,string> chatHistory)
         {
             var chatHistoryResponse = new ChatHistoryResponse(chatHistory).GetContainer();
 
-            foreach(var connection in _connections)
-            {
-                if(connection.Value.Login == login)
-                {
-                    connection.Value.Send(chatHistoryResponse);
-                }
-            }
+            var connections = _connections.Select(item => item.Value).ToArray();
+
+            Array.Find(connections, item => item.Login == login).Send(chatHistoryResponse);
+        }
+
+        public void SendFilteredMessages(string login, string filteredMessages)
+        {
+            var filterResponse = new FilterResponse(filteredMessages).GetContainer();
+
+            var connections = _connections.Select(item => item.Value).ToArray();
+
+            Array.Find(connections, item => item.Login == login).Send(filterResponse);
         }
 
         internal void HandleMessage(Guid clientId, MessageContainer container)
@@ -153,7 +159,7 @@
                     break;
                 case nameof(FilterRequest):
                     var filterRequest = ((JObject)container.Payload).ToObject(typeof(FilterRequest)) as FilterRequest;
-                    FilterReceived?.Invoke(this, new FilterReceivedEventArgs(filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
+                    FilterReceived?.Invoke(this, new FilterReceivedEventArgs(filterRequest.Login, filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
                     break;
             }
         }

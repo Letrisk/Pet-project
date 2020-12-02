@@ -26,47 +26,36 @@
 
             string message = String.Empty;
 
-            foreach(Message msg in messages)
+            messages.ForEach(msg =>
             {
                 message = $"{msg.Date} {msg.Source} : {msg.MessageText}\n";
-                if (msg.Source != client)
-                {
-                    if (!clientMessages.ContainsKey(msg.Source))
-                    {
-                        clientMessages.Add(msg.Source, String.Empty);
-                    }
 
-                    clientMessages[msg.Source] += message;
+                if (String.IsNullOrEmpty(msg.Target))
+                {
+                    clientMessages["General"] += message;
                 }
                 else
                 {
-                    if (msg.Target != client)
+                    if (msg.Target == client)
                     {
-                        if (String.IsNullOrEmpty(msg.Target))
+                        if (!clientMessages.ContainsKey(msg.Source))
                         {
-                            clientMessages["General"] += message;
+                            clientMessages.Add(msg.Source, String.Empty);
                         }
-                        else
-                        {
-                            if (!clientMessages.ContainsKey(msg.Target))
-                            {
-                                clientMessages.Add(msg.Target, String.Empty);
-                            }
 
-                            clientMessages[msg.Target] += message;
-                        }
+                        clientMessages[msg.Source] += message;
                     }
                     else
                     {
-                        if (!clientMessages.ContainsKey(client))
+                        if (!clientMessages.ContainsKey(msg.Target))
                         {
-                            clientMessages.Add(client, String.Empty);
+                            clientMessages.Add(msg.Target, String.Empty);
                         }
 
-                        clientMessages[client] += message;
+                        clientMessages[msg.Target] += message;
                     }
                 }
-            }
+            });
 
             return clientMessages;
         }

@@ -27,7 +27,7 @@
 
         private Dictionary<string, string> _chats = new Dictionary<string, string>();
 
-        private string _currentMessage, _chatMessages, _currentTarget = "General", _connectionParametres;
+        private string _currentMessage, _chatMessages, _currentTarget, _connectionParametres;
 
         private Visibility _chatVisibility = Visibility.Collapsed;
 
@@ -115,6 +115,7 @@
             _chatController.ConnectionReceived += HandleConnectionReceived;
             _chatController.MessageReceived += HandleMessageReceived;
             _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
+            _chatController.FilteredMessagesReceived += HandleFilteredMessagesReceived;
         }
 
         #endregion Constructors
@@ -164,6 +165,7 @@
                         ClientsList.Add("General");
                     });
                     Chats.Add("General", String.Empty);
+                    Chats.Add("Event Log", String.Empty);
                 }
 
                 if (string.IsNullOrEmpty(e.Client))
@@ -229,19 +231,28 @@
             if (String.IsNullOrEmpty(e.Target) || e.Target == "General")
             {
                 Chats["General"] += $"{e.Date} {e.Source} : {e.Message}\n";
-                ChatMessages = Chats["General"];
+                if (CurrentTarget == "General" || CurrentTarget == String.Empty)
+                {
+                    ChatMessages = Chats["General"];
+                }
             }
             else
             {
                 if (_chatController.Login == e.Source)
                 {
                     Chats[e.Target] += $"{e.Date} {e.Source} : {e.Message}\n";
-                    ChatMessages = Chats[e.Target];
+                    if (CurrentTarget == e.Target)
+                    {
+                        ChatMessages = Chats[e.Target];
+                    }
                 }
                 else
                 {
                     Chats[e.Source] += $"{e.Date} {e.Source} : {e.Message}\n";
-                    ChatMessages = Chats[e.Source];
+                    if (CurrentTarget == e.Source)
+                    {
+                        ChatMessages = Chats[e.Source];
+                    }
                 }
             }
         }
@@ -252,6 +263,21 @@
             {
                 Chats[client] = e.ClientMessages[client];
             }
+        }
+
+        private void HandleFilteredMessagesReceived(object sender, FilteredMessagesReceivedEventArgs e)
+        {
+            if (!ClientsList.Contains("Event Log"))
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    ClientsList.Add("Event Log");
+                });
+            }
+
+            Chats["Event Log"] = e.FilteredMessages;
+            ChatMessages = Chats["Event Log"];
+            CurrentTarget = "Event Log";
         }
 
         private void HandleOpenChat()

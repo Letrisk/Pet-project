@@ -6,6 +6,8 @@
     {
         #region Properties
 
+        public string Login { get; }
+
         public DateTime FirstDate { get; }
         public DateTime SecondDate { get; }
 
@@ -15,8 +17,9 @@
 
         #region Constructors
 
-        public FilterReceivedEventArgs(DateTime firstDate, DateTime secondDate, string[] messageTypes)
+        public FilterReceivedEventArgs(string login, DateTime firstDate, DateTime secondDate, string[] messageTypes)
         {
+            Login = login;
             FirstDate = firstDate;
             SecondDate = secondDate;
             MessageTypes = messageTypes;
