@@ -22,21 +22,37 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.1*"></ColumnDefinition>
-            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+            <ColumnDefinition Width="0.14*"></ColumnDefinition>
             <ColumnDefinition Width="0.8*"></ColumnDefinition>
             <ColumnDefinition Width="0.11*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Command="{Binding OpenEventLogCommand}" Margin="5,5,5,5" Content="Event Log"></Button>
-        <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="3" Margin="5,5,5,5" Content="Disconnect" Command="{Binding StopCommand}"></Button>
-        <Label  Grid.Row="1" Grid.Column="0" Content="Clients" FontSize="16"></Label>
-        <Label Grid.Row="1" Grid.Column="2" Content="{Binding ConnectionParametres}" VerticalContentAlignment="Top" FontSize="16"/>
-        <ListBox x:Name="clients" Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2" ItemsSource="{Binding ClientsList}"
-                 SelectedItem="{Binding CurrentTarget}" Margin="5,0,10,5">
-            
+        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Command="{Binding OpenEventLogCommand}" Style="{StaticResource PrimaryButtonStyle}" 
+                Margin="5,5,5,5" Content="Event Log"></Button>
+        <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="3" Style="{StaticResource PrimaryButtonStyle}" 
+                Margin="5,5,5,5" Content="Disconnect" Command="{Binding StopCommand}"></Button>
+        <TextBox  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,0,10,0" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Online Clients:"></TextBox>
+        <Label Grid.Row="1" Grid.Column="2" Style="{StaticResource ClientLabelStyle}" 
+                VerticalContentAlignment="Top"/>
+        <TextBox Grid.Row="1" Grid.Column="2" Margin="50,5,0,0" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="{Binding ConnectionParametres}" FontSize="18"/>
+        <ListBox x:Name="onlineClients" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
+                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 ItemsSource="{Binding OnlineClients}"
+                 SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True" 
+                 Margin="5,5,10,165">
         </ListBox>
-        <TextBox x:Name="messages" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" IsReadOnly="True" TextWrapping="Wrap" 
-                 Text="{Binding ChatMessages}" Margin="0, 0, 5, 5"></TextBox>
-        <TextBox x:Name="message" Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Margin="0, 5, 5, 5" Text="{Binding CurrentMessage}"></TextBox>
-        <Button x:Name="buttonSend" Grid.Row="4" Grid.Column="3" Content="Send" Margin="5" Command ="{Binding SendCommand}"></Button>
+        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ReadOnlyTextBoxStyle}" 
+               Text="Offline Clients:" Margin="5,115,10,126"></TextBox>
+        <ListBox x:Name="offlineClients" Grid.Row="3" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource OfflineListBoxStyle}"
+                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 ItemsSource="{Binding OfflineClients}" 
+                 SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True" 
+                 Margin="5,155,10,5"></ListBox>
+        <TextBox x:Name="messages" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2"
+                 Style="{StaticResource ChatTextBoxStyle}" Text="{Binding ChatMessages}" Margin="0, 0, 5, 5"></TextBox>
+        <TextBox x:Name="message" Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Margin="0, 5, 5, 5" Tag="Write something..."
+                 Style="{StaticResource MessageTextBoxStyle}" 
+                 Text="{Binding CurrentMessage}"></TextBox>
+        <Button x:Name="buttonSend" Grid.Row="4" Grid.Column="3" Content="Send" Style="{StaticResource SendButtonStyle}" 
+                Margin="5" Command ="{Binding SendCommand}"></Button>
     </Grid>
 </UserControl>

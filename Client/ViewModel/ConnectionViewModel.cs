@@ -121,7 +121,6 @@
             {
                 if (string.IsNullOrEmpty(e.Client))
                 {
-                    //GuideText += $"{e.Date} Клиент подключен к серверу\n";
                     GuideText = $"Авторизуйтесь, чтобы отправлять сообщения.\n";
                     IsLoginEnable = true;
                 }
@@ -130,19 +129,10 @@
                     GuideText = $"Авторизация выполнена успешно.\n";
 
                     ConnectionVisibility = Visibility.Collapsed;
-                    /*App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        foreach (object client in e.OnlineClients)
-                        {
-                            ClientsList.Add((string)client);
-                        }
-
-                    });*/
                 }
             }
             else
             {
-                //GuideText = "Введите адрес и порт";
                 CurrentLogin = String.Empty;
                 IsLoginEnable = false;
                 _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;

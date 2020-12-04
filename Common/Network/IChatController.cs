@@ -17,6 +17,7 @@
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
         event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
         event EventHandler<FilteredMessagesReceivedEventArgs> FilteredMessagesReceived;
+        event EventHandler<ClientsListReceivedEventArgs> ClientsListReceived;
 
         #endregion Events
 

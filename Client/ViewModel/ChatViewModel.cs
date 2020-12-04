@@ -24,7 +24,9 @@
         private IEventAggregator _eventAggregator;
 
         private ObservableCollection<string> _clientsList = new ObservableCollection<string>();
-
+        private ObservableCollection<string> _onlineClients = new ObservableCollection<string>();
+        private ObservableCollection<string> _offlineClients = new ObservableCollection<string>();
+ 
         private Dictionary<string, string> _chats = new Dictionary<string, string>();
 
         private string _currentMessage, _chatMessages, _currentTarget, _connectionParametres;
@@ -45,6 +47,18 @@
         {
             get => _clientsList;
             set => SetProperty(ref _clientsList, value);
+        }
+
+        public ObservableCollection<string> OnlineClients
+        {
+            get => _onlineClients;
+            set => SetProperty(ref _onlineClients, value);
+        }
+
+        public ObservableCollection<string> OfflineClients
+        {
+            get => _offlineClients;
+            set => SetProperty(ref _offlineClients, value);
         }
 
         public Dictionary<string, string> Chats
@@ -70,6 +84,7 @@
             get => _currentTarget;
             set
             {
+                
                 if (value == null)
                 {
                     SetProperty(ref _currentTarget, "General");
@@ -78,6 +93,11 @@
                 else
                 {
                     SetProperty(ref _currentTarget, value);
+                }
+
+                if (!_chats.ContainsKey(_currentTarget))
+                {
+                    _chats.Add(_currentTarget, String.Empty);
                 }
 
                 ChatMessages = _chats[_currentTarget];
@@ -116,6 +136,7 @@
             _chatController.MessageReceived += HandleMessageReceived;
             _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
             _chatController.FilteredMessagesReceived += HandleFilteredMessagesReceived;
+            _chatController.ClientsListReceived += HandleClientsListReceived;
         }
 
         #endregion Constructors
@@ -126,7 +147,7 @@
         {
             if (CurrentTarget == "General")
             {
-                _chatController?.Send(_chatController.Login, null, CurrentMessage);
+                _chatController?.Send(_chatController.Login, String.Empty, CurrentMessage);
             }
             else
             {
@@ -142,6 +163,8 @@
             {
                 _chatController.Disconnect();
                 ClientsList.Clear();
+                OnlineClients.Clear();
+                OfflineClients.Clear();
                 ChatMessages = String.Empty;
                 Chats.Clear();
                 ChatVisibility = Visibility.Collapsed;
@@ -160,28 +183,25 @@
             {
                 if (!ClientsList.Contains("General"))
                 {
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        ClientsList.Add("General");
-                    });
-                    Chats.Add("General", String.Empty);
-                    Chats.Add("Event Log", String.Empty);
+                    //OnlineClients.Add("General");
+                    //Chats.Add("General", String.Empty);
+                    //Chats.Add("Event Log", String.Empty);
                 }
 
-                if (string.IsNullOrEmpty(e.Client))
+                if (String.IsNullOrEmpty(e.Client))
                 {
-                    Chats["General"] += $"Авторизуйтесь, чтобы отправлять сообщения.\n";
-                    ChatMessages = Chats["General"];
+                    //Chats["General"] += $"Авторизуйтесь, чтобы отправлять сообщения.\n";
+                    //ChatMessages = Chats["General"];
                 }
                 else
                 {
                     ChatVisibility = Visibility.Visible;
 
-                    Chats["General"] += $"Авторизация выполнена успешно.\n";
-                    ChatMessages = Chats["General"];
+                    /*Chats["General"] += $"Авторизация выполнена успешно.\n";
+                    ChatMessages = Chats["General"];*/
                     ConnectionParametres = $"Login: {_chatController.Login}";
 
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    /*App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         foreach (object client in e.OnlineClients)
                         {
@@ -193,7 +213,14 @@
                             ClientsList.Add((string)client);
                         }
 
+                    });*/
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        OnlineClients.Add("General");
+                        OnlineClients.Add("Event Log");
+                        OnlineClients.AddRange(e.OnlineClients.ToList());
                     });
+                    
                 }
             }
         }
@@ -202,26 +229,26 @@
         {
             if (e.IsConnected)
             {
-                if (!Chats.ContainsKey(e.Login))
-                {
-                    Chats.Add(e.Login, String.Empty);
-                }
-
-                if (!ClientsList.Contains(e.Login))
+                /*if (!ClientsList.Contains(e.Login))
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         ClientsList.Add(e.Login);
                     });
-                }
+                }*/
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    OnlineClients.Add(e.Login);
+                    OfflineClients.Remove(e.Login);
+                });
+
             }
             else
             {
-                Chats.Remove(e.Login);
-
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    ClientsList.Remove(e.Login);
+                    OnlineClients.Remove(e.Login);
+                    OfflineClients.Add(e.Login);
                 });
             }
         }
@@ -259,25 +286,32 @@
 
         private void HandleChatHistoryReceived(object sender, ChatHistoryReceivedEventArgs e)
         {
-            foreach(string client in e.ClientMessages.Keys)
-            {
-                Chats[client] = e.ClientMessages[client];
-            }
+            Chats = e.ClientMessages;
+            ChatMessages = Chats["General"];
         }
 
         private void HandleFilteredMessagesReceived(object sender, FilteredMessagesReceivedEventArgs e)
         {
-            if (!ClientsList.Contains("Event Log"))
+            /*if (!ClientsList.Contains("Event Log"))
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     ClientsList.Add("Event Log");
                 });
-            }
+            }*/
 
             Chats["Event Log"] = e.FilteredMessages;
             ChatMessages = Chats["Event Log"];
             CurrentTarget = "Event Log";
+        }
+
+        private void HandleClientsListReceived(object sender, ClientsListReceivedEventArgs e)
+        {
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                ClientsList.AddRange(e.ClientsList.Where(item => !ClientsList.Contains(item)));
+                OfflineClients.AddRange(e.ClientsList.Where(item => !OnlineClients.Contains(item)));
+            });
         }
 
         private void HandleOpenChat()

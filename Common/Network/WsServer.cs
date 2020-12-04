@@ -79,7 +79,7 @@
             {
                 foreach (var connection in _connections)
                 {
-                    connection.Value.Send(messageBroadcast);
+                    connection.Value?.Send(messageBroadcast);
                 }
             }
             else
@@ -88,7 +88,7 @@
                 {
                     if (connection.Value.Login == target || connection.Value.Login == source)
                     {
-                        connection.Value.Send(messageBroadcast);
+                        connection.Value?.Send(messageBroadcast);
                     }
                 }
             }
@@ -98,9 +98,11 @@
         {
             var connectionBroadcast = new ConnectionBroadcast(login, isConnected, DateTime.Now).GetContainer();
 
-            foreach (var connection in _connections)
+            var connections = _connections.Where(item => item.Value.Login != login);
+            
+            foreach(var connection in connections)
             {
-                connection.Value.Send(connectionBroadcast);
+                connection.Value?.Send(connectionBroadcast);
             }
 
         }
@@ -111,7 +113,7 @@
 
             var connections = _connections.Select(item => item.Value).ToArray();
 
-            Array.Find(connections, item => item.Login == login).Send(chatHistoryResponse);
+            Array.Find(connections, item => item.Login == login)?.Send(chatHistoryResponse);
         }
 
         public void SendFilteredMessages(string login, string filteredMessages)
@@ -120,7 +122,16 @@
 
             var connections = _connections.Select(item => item.Value).ToArray();
 
-            Array.Find(connections, item => item.Login == login).Send(filterResponse);
+            Array.Find(connections, item => item.Login == login)?.Send(filterResponse);
+        }
+
+        public void SendClientsList(string login, List<string> clients)
+        {
+            var clientsListResponse = new ClientsListResponse(clients).GetContainer();
+
+            var connections = _connections.Select(item => item.Value).ToArray();
+
+            Array.Find(connections, item => item.Login == login)?.Send(clientsListResponse);
         }
 
         internal void HandleMessage(Guid clientId, MessageContainer container)

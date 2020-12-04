@@ -2,19 +2,19 @@
 {
     using System.Collections.Generic;
 
-    public class ChatHistoryResponse
+    public class ClientsListResponse
     {
         #region Properties
 
-        public Dictionary<string, string> ClientMessages { get; set; }
+        public List<string> Clients { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ChatHistoryResponse(Dictionary<string, string> clientMessages)
+        public ClientsListResponse(List<string> clients)
         {
-            ClientMessages = clientMessages;
+            Clients = clients;
         }
 
         #endregion Constructors
@@ -25,7 +25,7 @@
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(ChatHistoryResponse),
+                Identifier = nameof(ClientsListResponse),
                 Payload = this
             };
 

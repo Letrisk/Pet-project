@@ -1,6 +1,5 @@
 ﻿namespace Common.Network
 {
-    using System;
     using System.Collections.Generic;
 
     public class ChatHistoryReceivedEventArgs

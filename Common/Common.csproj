@@ -43,13 +43,13 @@
   <ItemGroup>
     <Compile Include="Network\ChatController.cs" />
     <Compile Include="Network\ConnectionController.cs" />
-    <Compile Include="Network\ControllerFactory.cs" />
     <Compile Include="Network\EventLogController.cs" />
     <Compile Include="Network\IChatController.cs" />
     <Compile Include="Network\IConnectionController.cs" />
     <Compile Include="Network\IController.cs" />
     <Compile Include="Network\IEventLogController.cs" />
     <Compile Include="Network\Messages\ChatHistoryResponse.cs" />
+    <Compile Include="Network\Messages\ClientsListResponse.cs" />
     <Compile Include="Network\Messages\ConnectionBroadcast.cs" />
     <Compile Include="Network\Messages\ConnectionRequest.cs" />
     <Compile Include="Network\Messages\ConnectionResponse.cs" />
@@ -59,12 +59,12 @@
     <Compile Include="Network\Messages\MessageContainer.cs" />
     <Compile Include="Network\Messages\MessageRequest.cs" />
     <Compile Include="Network\WsConnection.cs" />
-    <Compile Include="Network\WsController.cs" />
     <Compile Include="Network\WsServer.cs" />
     <Compile Include="Network\[Enums]\MessageType.cs" />
     <Compile Include="Network\[Enums]\ResultCodes.cs" />
     <Compile Include="Network\[Enums]\TransportType.cs" />
     <Compile Include="Network\[EventArgs]\ChatHistoryReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\ClientsListReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ConnectionReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ConnectionStateChangedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ErrorReceivedEventArgs.cs" />

@@ -62,6 +62,7 @@
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
         public event EventHandler<FilteredMessagesReceivedEventArgs> FilteredMessagesReceived;
+        public event EventHandler<ClientsListReceivedEventArgs> ClientsListReceived;
 
         #endregion Events
 
@@ -160,6 +161,10 @@
                 case nameof(FilterResponse):
                     var filterResponse = ((JObject)container.Payload).ToObject(typeof(FilterResponse)) as FilterResponse;
                     FilteredMessagesReceived?.Invoke(this, new FilteredMessagesReceivedEventArgs(filterResponse.FilteredMessages));
+                    break;
+                case nameof(ClientsListResponse):
+                    var clientsListResponse = ((JObject)container.Payload).ToObject(typeof(ClientsListResponse)) as ClientsListResponse;
+                    ClientsListReceived?.Invoke(this, new ClientsListReceivedEventArgs(clientsListResponse.Clients));
                     break;
             }
         }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Data.Entity;
 
     using Common.Network;
 
@@ -12,6 +13,7 @@
 
         private readonly MessageContext _messageDb = new MessageContext();
         private readonly ClientEventContext _clientEventDb = new ClientEventContext();
+        private readonly ClientContext _clientDb = new ClientContext();
 
         #endregion Fields
         
@@ -29,8 +31,53 @@
         {
             ClientEvent clientEvent = new ClientEvent { MessageType = messageType, Message = message, Date = date };
 
-            _clientEventDb.EventLog.Add(clientEvent);
-            _clientEventDb.SaveChanges();
+            try
+            {
+                _clientEventDb.EventLog.Add(clientEvent);
+                _clientEventDb.SaveChanges();
+            }
+            catch (NullReferenceException)
+            {
+                string errorMessage = "Пользователь слишком быстро отключился";
+                Console.WriteLine(errorMessage);
+
+                _clientEventDb.EventLog.Add(new ClientEvent
+                {
+                    Date = DateTime.Now,
+                    MessageType = MessageType.Error,
+                    Message = errorMessage
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void AddClient(string login)
+        {
+            try
+            {
+                if (_clientDb.Clients.Find(login) == null)
+                {
+                    Client client = new Client { Login = login };
+
+                    _clientDb.Clients.Add(client);
+                    _clientDb.SaveChanges();
+                }
+            }
+            catch(NullReferenceException)
+            {
+                string errorMessage = "Пользователь слишком быстро отключился";
+                Console.WriteLine(errorMessage);
+
+                _clientEventDb.EventLog.Add(new ClientEvent
+                {
+                    Date = DateTime.Now,
+                    MessageType = MessageType.Error,
+                    Message = errorMessage
+                });
+            }           
         }
 
         public List<Message> GetMessageLog(string source)
@@ -54,6 +101,13 @@
             var clientEvents = _clientEventDb.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.Contains(e.MessageType.ToString()));
 
             return (clientEventLog = clientEvents.ToList<ClientEvent>());
+        }
+
+        public List<Client> GetClients()
+        {
+            List<Client> clients = _clientDb.Clients.ToList();
+
+            return clients;
         }
 
         #endregion Properties

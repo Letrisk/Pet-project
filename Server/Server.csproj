@@ -54,7 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\Client.cs" />
+    <Compile Include="Database\ClientContext.cs" />
     <Compile Include="Database\ClientEventService.cs" />
+    <Compile Include="Database\ClientService.cs" />
     <Compile Include="Database\DatabaseController.cs" />
     <Compile Include="Database\ClientEvent.cs" />
     <Compile Include="Database\ClientEventContext.cs" />
@@ -74,6 +77,9 @@
       <Project>{712e6221-0a3b-4259-95ef-179e187a73b9}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ServerConfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
