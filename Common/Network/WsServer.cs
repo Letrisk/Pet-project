@@ -5,6 +5,7 @@
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Net;
+    using System.Timers;
 
     using Messages;
 
@@ -18,6 +19,10 @@
 
         private readonly IPEndPoint _listenAddress;
         private readonly ConcurrentDictionary<Guid, WsConnection> _connections;
+
+        private Dictionary<Guid, DateTime> _timeoutClients;
+        private Timer _timeoutTimer;
+        private int _timeout;
 
         private WebSocketServer _server;
 
@@ -39,11 +44,25 @@
         {
             _listenAddress = listenAddress;
             _connections = new ConcurrentDictionary<Guid, WsConnection>();
+            _timeoutClients = new Dictionary<Guid, DateTime>();
+            _timeoutTimer = new Timer();
+
+            _timeoutTimer.AutoReset = true;
+            _timeoutTimer.Interval = 10000;
+            _timeoutTimer.Elapsed += OnTimeoutEvent;
+            _timeoutTimer.Enabled = true;
+            _timeoutTimer.Start();
         }
 
         #endregion Constructors
 
         #region Methods
+
+        public int Timeout
+        {
+            get => _timeout;
+            set => _timeout = value;
+        }
 
         public void Start()
         {
@@ -68,6 +87,7 @@
                 connection.Close();
             }
 
+            _timeoutClients.Clear();
             _connections.Clear();
         }
 
@@ -134,10 +154,23 @@
             Array.Find(connections, item => item.Login == login)?.Send(clientsListResponse);
         }
 
+        private void OnTimeoutEvent(object sender, ElapsedEventArgs e)
+        {
+            var timedClients = _timeoutClients.Where(item => item.Value <= e.SignalTime).Select(item => item.Key).ToList();
+            foreach (Guid client in timedClients)
+            {
+                _timeoutClients.Remove(client);
+                _connections[client].Close();
+            }
+        }
+
+
         internal void HandleMessage(Guid clientId, MessageContainer container)
         {
             if (!_connections.TryGetValue(clientId, out WsConnection connection))
                 return;
+
+            _timeoutClients[clientId] = DateTime.Now.AddSeconds(Timeout);
 
             switch (container.Identifier)
             {
@@ -157,7 +190,7 @@
                     }
                     else
                     {
-                        connection.Login = connectionRequest.Login;
+                       connection.Login = connectionRequest.Login;
                         connectionResponse.OnlineClients = _connections.Select(item => item.Value.Login).ToArray();
                         connection.Send(connectionResponse.GetContainer());
                         ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, true));
@@ -178,12 +211,14 @@
         internal void AddConnection(WsConnection connection)
         {
             _connections.TryAdd(connection.Id, connection);
+            _timeoutClients.Add(connection.Id, DateTime.Now.AddSeconds(Timeout));
         }
 
         internal void FreeConnection(Guid id)
         {
             if (_connections.TryRemove(id, out WsConnection connection) && !string.IsNullOrEmpty(connection.Login))
             {
+                _timeoutClients.Remove(id);
                 ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, false));
                 ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connection.Login, false, DateTime.Now));
             }

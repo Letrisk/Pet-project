@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<transport>WebSocket</transport>
+	<ip>0.0.0.0</ip>
+	<port>65000</port>
+	<timeout>300</timeout>
+	<dbName>DBConnection</dbName>
+	<connectionString>data source=(localdb)\MSSQLLocalDB;Initial Catalog=MessageDb;Integrated Security=True;</connectionString>
+	<providerName>System.Data.SqlClient</providerName>
+</configuration>

@@ -11,9 +11,7 @@
     {
         #region Fields
 
-        private readonly MessageContext _messageDb = new MessageContext();
-        private readonly ClientEventContext _clientEventDb = new ClientEventContext();
-        private readonly ClientContext _clientDb = new ClientContext();
+        private readonly DatabaseContext _dbContext = new DatabaseContext();
 
         #endregion Fields
         
@@ -21,10 +19,10 @@
 
         public void AddMessage(string source, string target, string messageText, DateTime date)
         {
-                Message message = new Message { Source = source, Target = target, MessageText = messageText, Date = date };
+            Message message = new Message { Source = source, Target = target, MessageText = messageText, Date = date };
 
-                _messageDb.Messages.Add(message);
-                _messageDb.SaveChanges();
+            _dbContext.Messages.Add(message);
+            _dbContext.SaveChanges();
         }
 
         public void AddClientEvent(MessageType messageType, string message, DateTime date)
@@ -33,15 +31,15 @@
 
             try
             {
-                _clientEventDb.EventLog.Add(clientEvent);
-                _clientEventDb.SaveChanges();
+                _dbContext.EventLog.Add(clientEvent);
+                _dbContext.SaveChanges();
             }
             catch (NullReferenceException)
             {
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                _clientEventDb.EventLog.Add(new ClientEvent
+                _dbContext.EventLog.Add(new ClientEvent
                 {
                     Date = DateTime.Now,
                     MessageType = MessageType.Error,
@@ -58,12 +56,12 @@
         {
             try
             {
-                if (_clientDb.Clients.Find(login) == null)
+                if (_dbContext.Clients.Find(login) == null)
                 {
                     Client client = new Client { Login = login };
 
-                    _clientDb.Clients.Add(client);
-                    _clientDb.SaveChanges();
+                    _dbContext.Clients.Add(client);
+                    _dbContext.SaveChanges();
                 }
             }
             catch(NullReferenceException)
@@ -71,7 +69,7 @@
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                _clientEventDb.EventLog.Add(new ClientEvent
+                _dbContext.EventLog.Add(new ClientEvent
                 {
                     Date = DateTime.Now,
                     MessageType = MessageType.Error,
@@ -84,7 +82,7 @@
         {
             List<Message> messageLog = new List<Message>();
 
-            var messages = _messageDb.Messages.Where(m => m.Source == source || m.Target == source || String.IsNullOrEmpty(m.Target));
+            var messages = _dbContext.Messages.Where(m => m.Source == source || m.Target == source || String.IsNullOrEmpty(m.Target));
 
             foreach(Message msg in messages)
             {
@@ -98,14 +96,14 @@
         {
             List<ClientEvent> clientEventLog = new List<ClientEvent>();
 
-            var clientEvents = _clientEventDb.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.Contains(e.MessageType.ToString()));
+            var clientEvents = _dbContext.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.Contains(e.MessageType.ToString()));
 
             return (clientEventLog = clientEvents.ToList<ClientEvent>());
         }
 
         public List<Client> GetClients()
         {
-            List<Client> clients = _clientDb.Clients.ToList();
+            List<Client> clients = _dbContext.Clients.ToList();
 
             return clients;
         }

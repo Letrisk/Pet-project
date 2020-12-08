@@ -3,6 +3,11 @@
     using System;
     using System.Net;
     using System.Xml;
+    using System.Xml.Serialization;
+    using System.Data.SqlClient;
+    using System.Configuration;
+    using System.Linq;
+    using System.IO;
 
     using Common.Network;
 
@@ -10,17 +15,12 @@
 
     public class NetworkManager
     {
-        #region Constants
-
-        private const int WS_PORT = 65000;
-        private const int TCP_PORT = 65001;
-
-        #endregion Constants
-
         #region Fields
 
-        private string _ip, _transport;
-        private int _port;
+        private string _transport;
+        private int _port, _timeout;
+        private IPAddress _ip;
+        private ConnectionStringSettings _connectionSettings;
 
         private readonly WsServer _wsServer;
 
@@ -34,36 +34,22 @@
 
         public NetworkManager()
         {
-            XmlDocument serverConfig = new XmlDocument();
-            serverConfig.Load("ServerConfig.xml");
+            SettingsManager settingsManager = new SettingsManager("ServerConfig.xml");
+            _transport = settingsManager.Transport;
+            _ip = settingsManager.Ip;
+            _port = settingsManager.Port;
+            _timeout = settingsManager.Timeout;
 
-            XmlElement config = serverConfig.DocumentElement;
-            foreach(XmlNode xmlNode in config)
-            {
-                switch (xmlNode.Name)
-                {
-                    case ("transport"):
-                        _transport = xmlNode.InnerText;
-                        break;
-                    case ("ip"):
-                        _ip = xmlNode.InnerText;
-                        break;
-                    case ("port"):
-                        _port = Convert.ToInt32(xmlNode.InnerText);
-                        break;
-                    default:
-                        break;
-                }
-            }
 
             if (_transport == "WebSocket")
             {
-                _wsServer = new WsServer(new IPEndPoint(IPAddress.Parse(_ip), _port));
+                _wsServer = new WsServer(new IPEndPoint(_ip, _port));
                 _wsServer.ConnectionStateChanged += HandleConnectionStateChanged;
                 _wsServer.ConnectionReceived += HandleConnectionReceived;
                 _wsServer.MessageReceived += HandleMessageReceived;
                 _wsServer.ErrorReceived += HandleErrorReceived;
                 _wsServer.FilterReceived += HandleFilterReceived;
+                _wsServer.Timeout = _timeout;
             }
         }
 

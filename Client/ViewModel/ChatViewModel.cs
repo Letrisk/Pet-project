@@ -167,7 +167,6 @@
                 OfflineClients.Clear();
                 ChatMessages = String.Empty;
                 Chats.Clear();
-                ChatVisibility = Visibility.Collapsed;
             }
         }
 
@@ -220,8 +219,13 @@
                         OnlineClients.Add("Event Log");
                         OnlineClients.AddRange(e.OnlineClients.ToList());
                     });
+                    CurrentTarget = "General";
                     
                 }
+            }
+            else
+            {
+                ChatVisibility = Visibility.Collapsed;
             }
         }
 
