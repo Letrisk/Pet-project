@@ -12,8 +12,6 @@
     {
         #region Properties
 
-        WebSocket Socket { get; set; }
-
         string Login { get; set; }
 
         #endregion Properties

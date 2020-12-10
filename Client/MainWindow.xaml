@@ -21,6 +21,9 @@
         <DataTemplate DataType="{x:Type viewModel:EventLogViewModel}">
             <view:EventLogView></view:EventLogView>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:GroupChatViewModel}">
+            <view:GroupChatView></view:GroupChatView>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,5 +37,6 @@
         <view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
         <view:ChatView Grid.Row="1" Visibility="{Binding ChatVisibility}"></view:ChatView>
         <view:EventLogView Grid.Row="0" Grid.Column="1" Visibility="{Binding EventLogVisibility}"></view:EventLogView>
+        <view:GroupChatView Grid.Row="1" Grid.Column="1" Visibility="{Binding GroupChatVisibility}"></view:GroupChatView>
     </Grid>
 </Window>

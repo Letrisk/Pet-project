@@ -154,6 +154,7 @@
             _eventLogController = eventLogController;
             _eventAggregator = eventAggregator;
             eventAggregator.GetEvent<OpenEventLogEventArgs>().Subscribe(HandleOpenEventLog);
+            eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleCloseEventlog);
 
             FilterCommand = new DelegateCommand(ExecuteFilterCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
@@ -181,6 +182,11 @@
         private void HandleOpenEventLog()
         {
             EventLogVisibility = Visibility.Visible;
+        }
+
+        private void HandleCloseEventlog()
+        {
+            EventLogVisibility = Visibility.Collapsed;
         }
 
         #endregion Methods

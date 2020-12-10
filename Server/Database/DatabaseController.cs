@@ -52,6 +52,19 @@
             }
         }
 
+        public void AddGroup(string groupName, List<string> clients)
+        {
+            Group group = new Group { GroupName = groupName, Clients = new List<Client>() };
+
+            foreach(var client in clients)
+            {
+                _dbContext.Clients.Find(client).Groups.Add(group);
+            }
+
+            _dbContext.Groups.Add(group);
+            _dbContext.SaveChanges();
+        }
+
         public void AddClient(string login)
         {
             try
@@ -78,11 +91,13 @@
             }           
         }
 
-        public List<Message> GetMessageLog(string source)
+        public List<Message> GetMessageLog(string login)
         {
             List<Message> messageLog = new List<Message>();
+            List<string> groups = GetGroups(login).Select(item => item.GroupName).ToList();
 
-            var messages = _dbContext.Messages.Where(m => m.Source == source || m.Target == source || String.IsNullOrEmpty(m.Target));
+            var messages = _dbContext.Messages.Where(m => m.Source == login || m.Target == login || String.IsNullOrEmpty(m.Target) || 
+                                                          groups.Contains(m.Target));
 
             foreach(Message msg in messages)
             {
@@ -99,6 +114,15 @@
             var clientEvents = _dbContext.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.Contains(e.MessageType.ToString()));
 
             return (clientEventLog = clientEvents.ToList<ClientEvent>());
+        }
+
+        public List<Group> GetGroups(string login)
+        {
+            List<Group> groups = new List<Group>();
+
+            var clientGroups = _dbContext.Groups.Where(item => item.Clients.Where(client => client.Login == login).Count() != 0);
+
+            return (groups = clientGroups.ToList());
         }
 
         public List<Client> GetClients()

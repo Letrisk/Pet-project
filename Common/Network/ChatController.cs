@@ -1,7 +1,7 @@
 ﻿namespace Common.Network
 {
     using System;
-    using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Threading;
 
@@ -17,13 +17,10 @@
     {
         #region Fields
 
-        private readonly ConcurrentQueue<MessageContainer> _sendQueue;
-
-        //private ObservableCollection<string> _clientsList;
+        private IController _controller;
 
         private WebSocket _socket;
 
-        private int _sending;
         private string _login;
 
         #endregion Fields
@@ -63,15 +60,15 @@
         public event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
         public event EventHandler<FilteredMessagesReceivedEventArgs> FilteredMessagesReceived;
         public event EventHandler<ClientsListReceivedEventArgs> ClientsListReceived;
+        public event EventHandler<GroupsReceivedEventArgs> GroupsReceived;
 
         #endregion Events
 
         #region Constructors
 
-        public ChatController()
+        public ChatController(IController controller)
         {
-            _sendQueue = new ConcurrentQueue<MessageContainer>();
-            _sending = 0;
+            _controller = controller;
         }
 
         #endregion Constructors
@@ -94,37 +91,9 @@
             _login = string.Empty;
         }
 
-        public void Send(string source, string target, string message)
+        public void Send(string source, string target, string message, string groupName)
         {
-            _sendQueue.Enqueue(new MessageRequest(source, target, message).GetContainer());
-
-            if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
-                SendImpl();
-        }
-
-        private void SendCompleted(bool completed)
-        {
-            if (!completed)
-            {
-                Disconnect();
-                ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
-                return;
-            }
-
-            SendImpl();
-        }
-
-        private void SendImpl()
-        {
-            if (!IsConnected)
-                return;
-
-            if (!_sendQueue.TryDequeue(out var message) && Interlocked.CompareExchange(ref _sending, 0, 1) == 1)
-                return;
-
-            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            string serializedMessages = JsonConvert.SerializeObject(message, settings);
-            _socket.SendAsync(serializedMessages, SendCompleted);
+            _controller.Send(new MessageRequest(source, target, message, groupName).GetContainer());
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -152,7 +121,8 @@
                     break;
                 case nameof(MessageBroadcast):
                     var messageBroadcast = ((JObject)container.Payload).ToObject(typeof(MessageBroadcast)) as MessageBroadcast;
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBroadcast.Source, messageBroadcast.Target, messageBroadcast.Message, messageBroadcast.Date));
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBroadcast.Source, messageBroadcast.Target, messageBroadcast.Message, messageBroadcast.Date,
+                                                                               messageBroadcast.GroupName));
                     break;
                 case nameof(ChatHistoryResponse):
                     var chatHistoryResponse = ((JObject)container.Payload).ToObject(typeof(ChatHistoryResponse)) as ChatHistoryResponse;
@@ -166,11 +136,20 @@
                     var clientsListResponse = ((JObject)container.Payload).ToObject(typeof(ClientsListResponse)) as ClientsListResponse;
                     ClientsListReceived?.Invoke(this, new ClientsListReceivedEventArgs(clientsListResponse.Clients));
                     break;
+                case nameof(GroupsListResponse):
+                    var groupsListResponse = ((JObject)container.Payload).ToObject(typeof(GroupsListResponse)) as GroupsListResponse;
+                    GroupsReceived?.Invoke(this, new GroupsReceivedEventArgs(groupsListResponse.Groups));
+                    break;
+                case nameof(GroupBroadcast):
+                    var groupBroadcast = ((JObject)container.Payload).ToObject(typeof(GroupBroadcast)) as GroupBroadcast;
+                    GroupsReceived?.Invoke(this, new GroupsReceivedEventArgs(groupBroadcast.Group));
+                    break;
             }
         }
 
         private void OnClose(object sender, CloseEventArgs e)
         {
+            _login = String.Empty;
             ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
         }
 

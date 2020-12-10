@@ -113,6 +113,7 @@
         private void ExecuteLoginCommand()
         {
             _connectionController?.Login(CurrentLogin);
+            ConnectionVisibility = Visibility.Collapsed;
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -128,7 +129,7 @@
                 {
                     GuideText = $"Авторизация выполнена успешно.\n";
 
-                    ConnectionVisibility = Visibility.Collapsed;
+                    //ConnectionVisibility = Visibility.Collapsed;
                 }
             }
             else

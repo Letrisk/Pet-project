@@ -12,17 +12,20 @@
 
         public string Message { get; }
 
+        public string GroupName { get; }
+
         public DateTime Date { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public MessageReceivedEventArgs(string source, string target, string message, DateTime date)
+        public MessageReceivedEventArgs(string source, string target, string message, DateTime date, string groupName = null)
         {
             Source = source;
             Target = target;
             Message = message;
+            GroupName = groupName;
             Date = date;
         }
 

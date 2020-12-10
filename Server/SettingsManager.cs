@@ -11,7 +11,7 @@
     {
         #region Fields
 
-        private string _transport, _dbName, _connectionString, _providerName;
+        private string _transport;
 
         private int _port, _timeout;
 

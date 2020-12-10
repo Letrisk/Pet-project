@@ -23,9 +23,12 @@
             containerRegistry.RegisterSingleton<IConnectionController, ConnectionController>();
             containerRegistry.RegisterSingleton<IChatController, ChatController>();
             containerRegistry.RegisterSingleton<IEventLogController, EventLogController>();
+            containerRegistry.RegisterSingleton<IGroupChatController, GroupChatController>();
+            containerRegistry.RegisterSingleton<IController, Controller>();
             containerRegistry.Register<ConnectionViewModel>();
             containerRegistry.Register<ChatViewModel>();
             containerRegistry.Register<EventLogViewModel>();
+            containerRegistry.Register<GroupChatViewModel>();
         }
 
         protected override void ConfigureViewModelLocator()
@@ -35,6 +38,7 @@
             BindViewModelToView<ConnectionViewModel, ConnectionView>();
             BindViewModelToView<ChatViewModel, ChatView>();
             BindViewModelToView<EventLogViewModel, EventLogView>();
+            BindViewModelToView<GroupChatViewModel, GroupChatView>();
         }
 
         protected override Window CreateShell()

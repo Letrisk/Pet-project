@@ -26,6 +26,7 @@
         private ObservableCollection<string> _clientsList = new ObservableCollection<string>();
         private ObservableCollection<string> _onlineClients = new ObservableCollection<string>();
         private ObservableCollection<string> _offlineClients = new ObservableCollection<string>();
+        private ObservableCollection<string> _groupsList = new ObservableCollection<string>();
  
         private Dictionary<string, string> _chats = new Dictionary<string, string>();
 
@@ -59,6 +60,12 @@
         {
             get => _offlineClients;
             set => SetProperty(ref _offlineClients, value);
+        }
+
+        public ObservableCollection<string> GroupsList
+        {
+            get => _groupsList;
+            set => SetProperty(ref _groupsList, value);
         }
 
         public Dictionary<string, string> Chats
@@ -116,6 +123,8 @@
 
         public DelegateCommand OpenEventLogCommand { get; }
 
+        public DelegateCommand OpenGroupChatCommand { get; }
+
         #endregion Properties
 
         #region Constructors
@@ -130,6 +139,7 @@
             SendCommand = new DelegateCommand(ExecuteSendCommand);
             StopCommand = new DelegateCommand(ExecuteStopCommand);
             OpenEventLogCommand = new DelegateCommand(ExecuteOpenEventLogCommand);
+            OpenGroupChatCommand = new DelegateCommand(ExecuteOpenGroupChatCommand);
 
             _chatController.ConnectionStateChanged += HandleConnectionStateChanged;
             _chatController.ConnectionReceived += HandleConnectionReceived;
@@ -137,6 +147,7 @@
             _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
             _chatController.FilteredMessagesReceived += HandleFilteredMessagesReceived;
             _chatController.ClientsListReceived += HandleClientsListReceived;
+            _chatController.GroupsReceived += HandleGroupsReceived;
         }
 
         #endregion Constructors
@@ -151,7 +162,14 @@
             }
             else
             {
-                _chatController?.Send(_chatController.Login, CurrentTarget, CurrentMessage);
+                if (ClientsList.Contains(CurrentTarget))
+                {
+                    _chatController?.Send(_chatController.Login, CurrentTarget, CurrentMessage);
+                }
+                else
+                {
+                    _chatController?.Send(_chatController.Login, CurrentTarget, CurrentMessage, CurrentTarget);
+                }
             }
 
             CurrentMessage = String.Empty;
@@ -162,11 +180,13 @@
             if (_chatController != null)
             {
                 _chatController.Disconnect();
-                ClientsList.Clear();
+                /*ClientsList.Clear();
                 OnlineClients.Clear();
                 OfflineClients.Clear();
+                GroupsList.Clear();
                 ChatMessages = String.Empty;
                 Chats.Clear();
+                ChatVisibility = Visibility.Collapsed;*/
             }
         }
 
@@ -176,70 +196,60 @@
             ChatVisibility = Visibility.Collapsed;
         }
 
+        private void ExecuteOpenGroupChatCommand()
+        {
+            ObservableCollection<string> clients = new ObservableCollection<string>(_clientsList.Where(item => item != _chatController.Login));
+            _eventAggregator.GetEvent<OpenGroupChatEventArgs>().Publish(clients);
+            ChatVisibility = Visibility.Collapsed;
+        }
+
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
             if (e.IsConnected)
             {
-                if (!ClientsList.Contains("General"))
-                {
-                    //OnlineClients.Add("General");
-                    //Chats.Add("General", String.Empty);
-                    //Chats.Add("Event Log", String.Empty);
-                }
-
-                if (String.IsNullOrEmpty(e.Client))
-                {
-                    //Chats["General"] += $"Авторизуйтесь, чтобы отправлять сообщения.\n";
-                    //ChatMessages = Chats["General"];
-                }
-                else
+                if (!String.IsNullOrEmpty(e.Client))
                 {
                     ChatVisibility = Visibility.Visible;
 
-                    /*Chats["General"] += $"Авторизация выполнена успешно.\n";
-                    ChatMessages = Chats["General"];*/
                     ConnectionParametres = $"Login: {_chatController.Login}";
 
-                    /*App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        foreach (object client in e.OnlineClients)
-                        {
-                            if (!Chats.ContainsKey((string)client))
-                            {
-                                Chats.Add((string)client, String.Empty);
-                            }
-                            
-                            ClientsList.Add((string)client);
-                        }
-
-                    });*/
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         OnlineClients.Add("General");
                         OnlineClients.Add("Event Log");
-                        OnlineClients.AddRange(e.OnlineClients.ToList());
+                        if (e.OnlineClients != null)
+                        {
+                            OnlineClients.AddRange(e.OnlineClients.ToList());
+                        }
                     });
                     CurrentTarget = "General";
-                    
                 }
             }
             else
             {
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    ClientsList.Clear();
+                    OnlineClients.Clear();
+                    OfflineClients.Clear();
+                    GroupsList.Clear();
+                });
+                ChatMessages = String.Empty;
+                Chats.Clear();
                 ChatVisibility = Visibility.Collapsed;
+
+                _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
             }
         }
 
         private void HandleConnectionReceived(object sender, ConnectionReceivedEventArgs e)
         {
+            if (!Chats.ContainsKey(e.Login))
+            {
+                Chats.Add(e.Login, String.Empty);
+            }
             if (e.IsConnected)
             {
-                /*if (!ClientsList.Contains(e.Login))
-                {
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        ClientsList.Add(e.Login);
-                    });
-                }*/
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     OnlineClients.Add(e.Login);
@@ -269,20 +279,34 @@
             }
             else
             {
-                if (_chatController.Login == e.Source)
+                if (String.IsNullOrEmpty(e.GroupName))
                 {
-                    Chats[e.Target] += $"{e.Date} {e.Source} : {e.Message}\n";
-                    if (CurrentTarget == e.Target)
+                    if (_chatController.Login == e.Source)
                     {
-                        ChatMessages = Chats[e.Target];
+                        Chats[e.Target] += $"{e.Date} {e.Source} : {e.Message}\n";
+                        if (CurrentTarget == e.Target)
+                        {
+                            ChatMessages = Chats[e.Target];
+                        }
+                    }
+                    else
+                    {
+                        Chats[e.Source] += $"{e.Date} {e.Source} : {e.Message}\n";
+                        if (CurrentTarget == e.Source)
+                        {
+                            ChatMessages = Chats[e.Source];
+                        }
                     }
                 }
                 else
                 {
-                    Chats[e.Source] += $"{e.Date} {e.Source} : {e.Message}\n";
-                    if (CurrentTarget == e.Source)
+                    if (GroupsList.Contains(e.GroupName))
                     {
-                        ChatMessages = Chats[e.Source];
+                        Chats[e.GroupName] += $"{e.Date} {e.Source} : {e.Message}\n";
+                        if(CurrentTarget == e.GroupName)
+                        {
+                            ChatMessages = Chats[e.GroupName];
+                        }
                     }
                 }
             }
@@ -296,14 +320,6 @@
 
         private void HandleFilteredMessagesReceived(object sender, FilteredMessagesReceivedEventArgs e)
         {
-            /*if (!ClientsList.Contains("Event Log"))
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    ClientsList.Add("Event Log");
-                });
-            }*/
-
             Chats["Event Log"] = e.FilteredMessages;
             ChatMessages = Chats["Event Log"];
             CurrentTarget = "Event Log";
@@ -315,6 +331,17 @@
             {
                 ClientsList.AddRange(e.ClientsList.Where(item => !ClientsList.Contains(item)));
                 OfflineClients.AddRange(e.ClientsList.Where(item => !OnlineClients.Contains(item)));
+            });
+        }
+
+        private void HandleGroupsReceived(object sender, GroupsReceivedEventArgs e)
+        {
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                foreach(var group in e.Groups)
+                {
+                    GroupsList.Add(group.Key);
+                }
             });
         }
 

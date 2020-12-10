@@ -35,6 +35,7 @@
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ErrorReceivedEventArgs> ErrorReceived;
         public event EventHandler<FilterReceivedEventArgs> FilterReceived;
+        public event EventHandler<CreateGroupReceivedEventArgs> CreateGroupReceived;
 
         #endregion Events
 
@@ -91,11 +92,11 @@
             _connections.Clear();
         }
 
-        public void SendMessageBroadcast(string source, string target, string message)
+        public void SendMessageBroadcast(string source, string target, string message, string groupName = null)
         {
-            var messageBroadcast = new MessageBroadcast(source, target, message, DateTime.Now).GetContainer();
+            var messageBroadcast = new MessageBroadcast(source, target, message, DateTime.Now, groupName).GetContainer();
 
-            if (string.IsNullOrEmpty(target))
+            if (string.IsNullOrEmpty(target) || !String.IsNullOrEmpty(groupName))
             {
                 foreach (var connection in _connections)
                 {
@@ -154,13 +155,32 @@
             Array.Find(connections, item => item.Login == login)?.Send(clientsListResponse);
         }
 
+        public void SendGroups(string login, Dictionary<string, List<string>> groups)
+        {
+            var groupsResponse = new GroupsListResponse(groups).GetContainer();
+
+            var connections = _connections.Select(item => item.Value).ToArray();
+
+            Array.Find(connections, item => item.Login == login)?.Send(groupsResponse);
+        }
+
+        public void SendGroupBroadcast(Dictionary<string, List<string>> group)
+        {
+            var groupBroadcast = new GroupBroadcast(group).GetContainer();
+
+            foreach(var connection in _connections)
+            {
+                connection.Value?.Send(groupBroadcast);
+            }
+        }
+
         private void OnTimeoutEvent(object sender, ElapsedEventArgs e)
         {
             var timedClients = _timeoutClients.Where(item => item.Value <= e.SignalTime).Select(item => item.Key).ToList();
             foreach (Guid client in timedClients)
             {
-                _timeoutClients.Remove(client);
-                _connections[client].Close();
+                _timeoutClients?.Remove(client);
+                _connections[client]?.Close();
             }
         }
 
@@ -199,11 +219,15 @@
                     break;
                 case nameof(MessageRequest):
                     var messageRequest = ((JObject)container.Payload).ToObject(typeof(MessageRequest)) as MessageRequest;
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageRequest.Source, messageRequest.Target, messageRequest.Message, DateTime.Now));
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageRequest.Source, messageRequest.Target, messageRequest.Message, DateTime.Now, messageRequest.GroupName));
                     break;
                 case nameof(FilterRequest):
                     var filterRequest = ((JObject)container.Payload).ToObject(typeof(FilterRequest)) as FilterRequest;
                     FilterReceived?.Invoke(this, new FilterReceivedEventArgs(filterRequest.Login, filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
+                    break;
+                case nameof(CreateGroupRequest):
+                    var createGroupRequest = ((JObject)container.Payload).ToObject(typeof(CreateGroupRequest)) as CreateGroupRequest;
+                    CreateGroupReceived?.Invoke(this, new CreateGroupReceivedEventArgs(createGroupRequest.GroupName, createGroupRequest.Clients));
                     break;
             }
         }
@@ -218,10 +242,12 @@
         {
             if (_connections.TryRemove(id, out WsConnection connection) && !string.IsNullOrEmpty(connection.Login))
             {
-                _timeoutClients.Remove(id);
+                
                 ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, false));
                 ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connection.Login, false, DateTime.Now));
             }
+
+            _timeoutClients.Remove(id);
         }
 
         #endregion Methods

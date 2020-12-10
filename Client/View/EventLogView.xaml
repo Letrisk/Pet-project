@@ -19,7 +19,7 @@
             <RowDefinition Height="0.2*"></RowDefinition>
             <RowDefinition Height="0.2*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="0.5*"></RowDefinition>
+            <RowDefinition Height="0.4*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"></ColumnDefinition>
@@ -56,9 +56,9 @@
             <CheckBox Content="Events" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsEvents}" Margin="0,0,0,30"></CheckBox>
             <CheckBox Content="Errors" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsErrors}"></CheckBox>
         </StackPanel>
-        <Button Grid.Row="6" Grid.Column="0" Content="Apply" Style="{StaticResource PrimaryButtonStyle}" 
+        <Button Grid.Row="6" Grid.Column="0" FontSize="18" Content="Apply" Style="{StaticResource PrimaryButtonStyle}" 
                 Command="{Binding FilterCommand}" Margin="5,15,0,15"></Button>
-        <Button Grid.Row="6" Grid.Column="1" Content="Cancel" Style="{StaticResource PrimaryButtonStyle}" 
+        <Button Grid.Row="6" Grid.Column="1" FontSize="18" Content="Cancel" Style="{StaticResource PrimaryButtonStyle}" 
                 Command="{Binding CancelCommand}" Margin="5,15,5,15"></Button>
     </Grid>
 </UserControl>

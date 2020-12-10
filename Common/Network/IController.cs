@@ -1,26 +1,26 @@
 ﻿namespace Common.Network
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Collections.ObjectModel;
+
+    using WebSocketSharp;
+
+    using Messages;
 
     public interface IController
     {
-        #region Events
+        #region Properties
 
-        event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
-        event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
-        event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        WebSocket Socket { get; set; }
 
-        #endregion Events
+        #endregion Properties
 
         #region Methods
 
-        void Connect(string address, string port);
+        void Send(MessageContainer messageContainer);
 
         void Disconnect();
-
-        void Login(string login);
-
-        void Send(string source, string target, string message);
 
         #endregion Methods
     }

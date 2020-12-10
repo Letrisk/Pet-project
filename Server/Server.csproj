@@ -61,7 +61,10 @@
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\DatabaseController.cs" />
     <Compile Include="Database\ClientEvent.cs" />
+    <Compile Include="Database\Group.cs" />
+    <Compile Include="Database\GroupService.cs" />
     <Compile Include="Database\Message.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="NetworkManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -18,6 +18,7 @@
         event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;
         event EventHandler<FilteredMessagesReceivedEventArgs> FilteredMessagesReceived;
         event EventHandler<ClientsListReceivedEventArgs> ClientsListReceived;
+        event EventHandler<GroupsReceivedEventArgs> GroupsReceived;
 
         #endregion Events
 
@@ -33,7 +34,7 @@
 
         void Disconnect();
 
-        void Send(string source, string target, string message);
+        void Send(string source, string target, string message, string groupName = null);
 
         #endregion Methods
     }

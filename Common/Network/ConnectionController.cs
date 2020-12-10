@@ -16,14 +16,13 @@
     {
         #region Fields
 
-        private readonly ConcurrentQueue<MessageContainer> _sendQueue;
-
         private readonly IChatController _chatController;
         private readonly IEventLogController _eventLogController;
+        private readonly IGroupChatController _groupChatController;
+        private readonly IController _controller;
 
         private WebSocket _socket;
 
-        private int _sending;
         private string _login;
 
         #endregion Fields
@@ -38,21 +37,18 @@
 
         public event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged;
         public event EventHandler<ErrorReceivedEventArgs> ErrorReceived;
-        /*public event EventHandler<ConnectionReceivedEventArgs> ConnectionReceived;
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-        public event EventHandler<ChatHistoryReceivedEventArgs> ChatHistoryReceived;*/
 
         #endregion Events
 
         #region Constructors
 
-        public ConnectionController(IChatController chatController, IEventLogController eventLogController)
+        public ConnectionController(IController controller, IChatController chatController, IEventLogController eventLogController,
+                                    IGroupChatController groupChatController)
         {
+            _controller = controller;
             _chatController = chatController;
             _eventLogController = eventLogController;
-
-            _sendQueue = new ConcurrentQueue<MessageContainer>();
-            _sending = 0;
+            _groupChatController = groupChatController;
         }
 
         #endregion Constructors
@@ -67,8 +63,8 @@
             _socket.OnMessage += OnMessage;
             _socket.ConnectAsync();
 
+            _controller.Socket = _socket;
             _chatController.Socket = _socket;
-            _eventLogController.Socket = _socket;
         }
 
         public void Disconnect()
@@ -88,38 +84,10 @@
         }
 
         public void Login(string login)
-        {
+        {            
             _login = login;
-            _sendQueue.Enqueue(new ConnectionRequest(_login).GetContainer());
-
-            if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
-                SendImpl();
-        }
-
-        private void SendCompleted(bool completed)
-        {
-            // При отправке произошла ошибка.
-            if (!completed)
-            {
-                Disconnect();
-                ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
-                return;
-            }
-
-            SendImpl();
-        }
-
-        private void SendImpl()
-        {
-            if (!IsConnected)
-                return;
-
-            if (!_sendQueue.TryDequeue(out var message) && Interlocked.CompareExchange(ref _sending, 0, 1) == 1)
-                return;
-
-            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            string serializedMessages = JsonConvert.SerializeObject(message, settings);
-            _socket.SendAsync(serializedMessages, SendCompleted);
+            _groupChatController.Login = login;
+            _controller.Send(new ConnectionRequest(_login).GetContainer());
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -138,31 +106,13 @@
                         _login = string.Empty;
                         string source = string.Empty;
                         ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs(connectionResponse.Reason, connectionResponse.Date));
-                        //MessageReceived?.Invoke(this, new MessageReceivedEventArgs(source, _login, connectionResponse.Reason, connectionResponse.Date));
                     }
 
-                    //_chatController.Sending = _sending;
                     _chatController.Login = _login;
                     _eventLogController.Login = _login;
-                    //_chatController.IsEnable = true;
-                    /*_chatController.ConnectionStateChanged += ConnectionStateChanged;
-                    _chatController.ConnectionReceived += ConnectionReceived;
-                    _chatController.MessageReceived += MessageReceived;*/
 
                     ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true, connectionResponse.OnlineClients));
                     break;
-                /*case nameof(ConnectionBroadcast):
-                    var connectionBroadcast = ((JObject)container.Payload).ToObject(typeof(ConnectionBroadcast)) as ConnectionBroadcast;
-                    ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connectionBroadcast.Login, connectionBroadcast.IsConnected, connectionBroadcast.Date));
-                    break;
-                case nameof(MessageBroadcast):
-                    var messageBroadcast = ((JObject)container.Payload).ToObject(typeof(MessageBroadcast)) as MessageBroadcast;
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBroadcast.Source, messageBroadcast.Target, messageBroadcast.Message, messageBroadcast.Date));
-                    break;
-                case nameof(ChatHistoryResponse):
-                    var chatHistoryResponse = ((JObject)container.Payload).ToObject(typeof(ChatHistoryResponse)) as ChatHistoryResponse;
-                    ChatHistoryReceived?.Invoke(this, new ChatHistoryReceivedEventArgs(chatHistoryResponse.ClientMessages));
-                    break;*/
             }
         }
 

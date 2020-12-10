@@ -1,18 +1,23 @@
 ﻿namespace Common.Network.Messages
 {
-    class ConnectionRequest
+    using System.Collections.Generic;
+
+    public class CreateGroupRequest
     {
         #region Properties
 
-        public string Login { get; set; }
+        public string GroupName { get; set; }
+
+        public List<string> Clients { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ConnectionRequest(string login)
+        public CreateGroupRequest(string groupName, List<string> clients)
         {
-            Login = login;
+            GroupName = groupName;
+            Clients = clients;
         }
 
         #endregion Constructors
@@ -23,7 +28,7 @@
         {
             var container = new MessageContainer
             {
-                Identifier = nameof(ConnectionRequest),
+                Identifier = nameof(CreateGroupRequest),
                 Payload = this
             };
 
