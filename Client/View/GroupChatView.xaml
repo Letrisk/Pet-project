@@ -9,7 +9,8 @@
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              interactivity:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
-             Height="450" Width="600">
+             Height="450" Width="600"
+             Style="{StaticResource PrimaryControlStyle}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.1*"></RowDefinition>

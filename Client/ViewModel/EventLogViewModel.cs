@@ -26,7 +26,7 @@
         private DateTime _firstDate = DateTime.Now, _secondDate = DateTime.Now;
         private int _firstDateHours, _firstDateMinutes, _firstDateSeconds, _secondDateHours, _secondDateMinutes, _secondDateSeconds;
 
-        private bool _isMessages, _isEvents, _isErrors;
+        private bool _isMessages, _isEvents, _isErrors, _isDarkTheme;
         List<string> _messageTypes;
 
         private Visibility _eventLogVisibility = Visibility.Collapsed;
@@ -134,6 +134,11 @@
                 }
             }
         }
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set => SetProperty(ref _isDarkTheme, value);
+        }
 
         public Visibility EventLogVisibility
         {
@@ -155,6 +160,7 @@
             _eventAggregator = eventAggregator;
             eventAggregator.GetEvent<OpenEventLogEventArgs>().Subscribe(HandleOpenEventLog);
             eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleCloseEventlog);
+            eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
 
             FilterCommand = new DelegateCommand(ExecuteFilterCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
@@ -186,7 +192,21 @@
 
         private void HandleCloseEventlog()
         {
+            FirstDateHours = 0;
+            FirstDateMinutes = 0;
+            FirstDateSeconds = 0;
+            SecondDateHours = 0;
+            SecondDateMinutes = 0;
+            SecondDateSeconds = 0;
+            IsMessages = false;
+            IsEvents = false;
+            IsErrors = false;
             EventLogVisibility = Visibility.Collapsed;
+        }
+
+        private void HandleChangeStyle(bool isDarkTheme)
+        {
+            IsDarkTheme = isDarkTheme;
         }
 
         #endregion Methods

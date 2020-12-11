@@ -125,7 +125,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\ResourceDictionaries\ScrollBars.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\ResourceDictionaries\TextBoxes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ResourceDictionaries\UserControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,6 +192,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Themes\ResourceDictionaries\Images\sendIcon2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\ResourceDictionaries\Images\sunIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\ResourceDictionaries\Images\moonIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

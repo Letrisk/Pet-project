@@ -6,6 +6,7 @@
     using System.IO;
     using System.Net;
     using System.Configuration;
+    using System.Data.SqlClient;
 
     public class SettingsManager
     {

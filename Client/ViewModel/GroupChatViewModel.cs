@@ -28,7 +28,7 @@
 
         private string _currentTarget, _deleteCurrentTarget, _groupName;
 
-        private bool _isApplyEnable = false;
+        private bool _isApplyEnable = false, _isDarkTheme;
 
         private Visibility _groupChatVisibility = Visibility.Collapsed;
 
@@ -107,6 +107,12 @@
             set => SetProperty(ref _isApplyEnable, value);
         }
 
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set => SetProperty(ref _isDarkTheme, value);
+        }
+
         public Visibility GroupChatVisibility
         {
             get => _groupChatVisibility;
@@ -126,6 +132,7 @@
             _eventAggregator = eventAggregator;
             eventAggregator.GetEvent<OpenGroupChatEventArgs>().Subscribe(HandleOpenGroupChat);
             eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleCloseGroupChat);
+            eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
 
             _groupChatController = groupChatController;
 
@@ -160,7 +167,19 @@
 
         private void HandleCloseGroupChat()
         {
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                Clients.Clear();
+                GroupClients.Clear();
+            });
+            GroupName = String.Empty;
+            IsApplyEnable = false;
             GroupChatVisibility = Visibility.Collapsed;
+        }
+
+        private void HandleChangeStyle(bool isDarkTheme)
+        {
+            IsDarkTheme = isDarkTheme;
         }
 
         #endregion Methods

@@ -8,6 +8,8 @@
     using System.Linq;
     using System.Windows.Threading;
     using System.Threading.Tasks;
+    using System.Timers;
+    using System.Windows.Media;
 
     using Prism.Commands;
     using Prism.Mvvm;
@@ -19,6 +21,8 @@
     public class ChatViewModel : BindableBase
     {
         #region Fields
+
+        private Timer _timer;
 
         private IChatController _chatController;
         private IEventAggregator _eventAggregator;
@@ -32,11 +36,14 @@
 
         private string _currentMessage, _chatMessages, _currentTarget, _connectionParametres;
 
+        private bool _isDarkTheme;
+
         private Visibility _chatVisibility = Visibility.Collapsed;
 
         #endregion Fields
 
         #region Properties
+        public int counter = 0;
 
         public Visibility ChatVisibility
         {
@@ -117,6 +124,12 @@
             set => SetProperty(ref _connectionParametres, value);
         }
 
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set => SetProperty(ref _isDarkTheme, value);
+        }
+
         public DelegateCommand SendCommand { get; }
 
         public DelegateCommand StopCommand { get; }
@@ -125,12 +138,20 @@
 
         public DelegateCommand OpenGroupChatCommand { get; }
 
+        public DelegateCommand ChangeStyleCommand { get; }
+
+
         #endregion Properties
 
         #region Constructors
 
         public ChatViewModel(IChatController chatController, IEventAggregator eventAggregator)
         {
+            _timer = new Timer();
+            _timer.AutoReset = true;
+            _timer.Interval = 1;
+            _timer.Elapsed += OnTimerEvent;
+
             _chatController = chatController;
             _eventAggregator = eventAggregator;
 
@@ -140,19 +161,19 @@
             StopCommand = new DelegateCommand(ExecuteStopCommand);
             OpenEventLogCommand = new DelegateCommand(ExecuteOpenEventLogCommand);
             OpenGroupChatCommand = new DelegateCommand(ExecuteOpenGroupChatCommand);
+            ChangeStyleCommand = new DelegateCommand(ExecuteChangeStyleCommand);
 
             _chatController.ConnectionStateChanged += HandleConnectionStateChanged;
-            _chatController.ConnectionReceived += HandleConnectionReceived;
-            _chatController.MessageReceived += HandleMessageReceived;
-            _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
-            _chatController.FilteredMessagesReceived += HandleFilteredMessagesReceived;
-            _chatController.ClientsListReceived += HandleClientsListReceived;
-            _chatController.GroupsReceived += HandleGroupsReceived;
         }
 
         #endregion Constructors
 
         #region Methods
+
+        private void OnTimerEvent(object sender, ElapsedEventArgs e)
+        {
+            _chatController?.Send(_chatController.Login, String.Empty, counter++.ToString());
+        }
 
         private void ExecuteSendCommand()
         {
@@ -179,14 +200,29 @@
         {
             if (_chatController != null)
             {
-                _chatController.Disconnect();
-                /*ClientsList.Clear();
-                OnlineClients.Clear();
-                OfflineClients.Clear();
-                GroupsList.Clear();
+                /*_timer.Stop();
+                _timer.Enabled = false;*/
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    ClientsList.Clear();
+                    OnlineClients.Clear();
+                    OfflineClients.Clear();
+                    GroupsList.Clear();
+                });
                 ChatMessages = String.Empty;
                 Chats.Clear();
-                ChatVisibility = Visibility.Collapsed;*/
+                ChatVisibility = Visibility.Collapsed;
+
+                _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
+
+                _chatController.ConnectionReceived -= HandleConnectionReceived;
+                _chatController.MessageReceived -= HandleMessageReceived;
+                _chatController.ChatHistoryReceived -= HandleChatHistoryReceived;
+                _chatController.FilteredMessagesReceived -= HandleFilteredMessagesReceived;
+                _chatController.ClientsListReceived -= HandleClientsListReceived;
+                _chatController.GroupsReceived -= HandleGroupsReceived;
+
+                _chatController.Disconnect();
             }
         }
 
@@ -203,12 +239,27 @@
             ChatVisibility = Visibility.Collapsed;
         }
 
+        private void ExecuteChangeStyleCommand()
+        {
+            _eventAggregator.GetEvent<ChangeStyleEventArgs>().Publish(IsDarkTheme);
+        }
+
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
             if (e.IsConnected)
             {
                 if (!String.IsNullOrEmpty(e.Client))
                 {
+                    _chatController.ConnectionReceived += HandleConnectionReceived;
+                    _chatController.MessageReceived += HandleMessageReceived;
+                    _chatController.ChatHistoryReceived += HandleChatHistoryReceived;
+                    _chatController.FilteredMessagesReceived += HandleFilteredMessagesReceived;
+                    _chatController.ClientsListReceived += HandleClientsListReceived;
+                    _chatController.GroupsReceived += HandleGroupsReceived;
+
+                    /*_timer.Enabled = true;
+                    _timer.Start();*/
+
                     ChatVisibility = Visibility.Visible;
 
                     ConnectionParametres = $"Login: {_chatController.Login}";
@@ -227,18 +278,7 @@
             }
             else
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    ClientsList.Clear();
-                    OnlineClients.Clear();
-                    OfflineClients.Clear();
-                    GroupsList.Clear();
-                });
-                ChatMessages = String.Empty;
-                Chats.Clear();
-                ChatVisibility = Visibility.Collapsed;
-
-                _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
+                ExecuteStopCommand();
             }
         }
 

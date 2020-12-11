@@ -11,6 +11,8 @@
                 <ResourceDictionary Source="Themes/ResourceDictionaries/Labels.xaml" />
                 <ResourceDictionary Source="Themes/ResourceDictionaries/ListBoxes.xaml"/>
                 <ResourceDictionary Source="Themes/ResourceDictionaries/CheckBoxes.xaml"/>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/ScrollBars.xaml"/>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/UserControls.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -4,11 +4,23 @@
 
     <Style x:Key="PrimaryListBoxStyle" TargetType="{x:Type ListBox}">
         <Setter Property="Background" Value="#FFF1F1F1"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                <Setter Property="Background" Value="#FF1E1E1E"/>
+                <Setter Property="Foreground" Value="White"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="OfflineListBoxStyle" TargetType="{x:Type ListBox}">
         <Setter Property="Background" Value="#FFF1F1F1"/>
         <Setter Property="Foreground" Value="#FF595959"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                <Setter Property="Background" Value="#FF1E1E1E"/>
+                <Setter Property="Foreground" Value="#FF979797"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
     
     <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">

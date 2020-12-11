@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Data.Entity;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using Common.Network;
 
@@ -21,8 +23,11 @@
         {
             Message message = new Message { Source = source, Target = target, MessageText = messageText, Date = date };
 
-            _dbContext.Messages.Add(message);
-            _dbContext.SaveChanges();
+            using (var context = new DatabaseContext())
+            {
+                context.Messages.Add(message);
+                context.SaveChanges();
+            }
         }
 
         public void AddClientEvent(MessageType messageType, string message, DateTime date)
@@ -56,13 +61,28 @@
         {
             Group group = new Group { GroupName = groupName, Clients = new List<Client>() };
 
-            foreach(var client in clients)
+            try
             {
-                _dbContext.Clients.Find(client).Groups.Add(group);
-            }
+                foreach (var client in clients)
+                {
+                    _dbContext.Clients.Find(client).Groups.Add(group);
+                }
 
-            _dbContext.Groups.Add(group);
-            _dbContext.SaveChanges();
+                _dbContext.Groups.Add(group);
+                _dbContext.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                string errorMessage = "Такая группа уже существует";
+                Console.WriteLine(errorMessage);
+
+                _dbContext.EventLog.Add(new ClientEvent
+                {
+                    Date = DateTime.Now,
+                    MessageType = MessageType.Error,
+                    Message = errorMessage
+                });
+            }
         }
 
         public void AddClient(string login)

@@ -149,8 +149,8 @@
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            _login = String.Empty;
             ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
+            _login = String.Empty;
         }
 
         private void OnOpen(object sender, System.EventArgs e)

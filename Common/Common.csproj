@@ -69,6 +69,7 @@
     <Compile Include="Network\[Enums]\MessageType.cs" />
     <Compile Include="Network\[Enums]\ResultCodes.cs" />
     <Compile Include="Network\[Enums]\TransportType.cs" />
+    <Compile Include="Network\[EventArgs]\ChangeStyleEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ChatHistoryReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ClientsListReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\CloseWindowsEventArgs.cs" />

@@ -10,6 +10,7 @@
 
     using Prism.Commands;
     using Prism.Mvvm;
+    using Prism.Events;
 
     using Common.Network;
     using View;
@@ -26,12 +27,13 @@
         #region Fields
 
         private IConnectionController _connectionController;
+        private IEventAggregator _eventAggregator;
 
         private Visibility _connectionVisibility = Visibility.Visible;
 
         private string _currentAddress = "192.168.37.147", _currentPort = "65000", _currentLogin, _guideText = "Введите адрес и порт";
 
-        private bool _isLoginEnable = false;
+        private bool _isLoginEnable = false, _isDarkTheme;
 
         #endregion Fields
 
@@ -73,6 +75,12 @@
             set => SetProperty(ref _isLoginEnable, value);
         }
 
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set => SetProperty(ref _isDarkTheme, value);
+        }
+
         public DelegateCommand StartCommand { get; }
 
         public DelegateCommand LoginCommand { get; }
@@ -81,9 +89,13 @@
 
         #region Constructors
 
-        public ConnectionViewModel(IConnectionController connectionController)
+        public ConnectionViewModel(IEventAggregator eventAggregator, IConnectionController connectionController)
         {
+            _eventAggregator = eventAggregator;
             _connectionController = connectionController;
+
+            eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
+
             StartCommand = new DelegateCommand(ExecuteStartCommand);
             LoginCommand = new DelegateCommand(ExecuteLoginCommand);
         }
@@ -145,6 +157,11 @@
         private void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
         {
             CurrentLogin = e.Reason;
+        }
+
+        private void HandleChangeStyle(bool isDarkTheme)
+        {
+            IsDarkTheme = isDarkTheme;
         }
 
         #endregion Methods
