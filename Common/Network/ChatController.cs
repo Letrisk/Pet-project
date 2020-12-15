@@ -96,6 +96,11 @@
             _controller.Send(new MessageRequest(source, target, message, groupName).GetContainer());
         }
 
+        public void LeaveGroup(string source, string groupName)
+        {
+            _controller.Send(new LeaveGroupRequest(source, groupName).GetContainer());
+        }
+
         private void OnMessage(object sender, MessageEventArgs e)
         {
             if (!e.IsText)

@@ -2,6 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Pet_Project.Themes.ResourceDictionaries">
 
+    <Style x:Key="PrimaryLabelStyle" TargetType="{x:Type Label}">
+        <Setter Property="FontSize" Value="16"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                <Setter Property="Background" Value="#FF1E1E1E"/>
+                <Setter Property="Foreground" Value="White"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    
     <Style x:Key="ClientLabelStyle" TargetType="{x:Type Label}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="BitmapEffect">

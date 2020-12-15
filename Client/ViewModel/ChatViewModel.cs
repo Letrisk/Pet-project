@@ -140,6 +140,7 @@
 
         public DelegateCommand ChangeStyleCommand { get; }
 
+        public DelegateCommand LeaveGroupCommand { get; }
 
         #endregion Properties
 
@@ -162,6 +163,7 @@
             OpenEventLogCommand = new DelegateCommand(ExecuteOpenEventLogCommand);
             OpenGroupChatCommand = new DelegateCommand(ExecuteOpenGroupChatCommand);
             ChangeStyleCommand = new DelegateCommand(ExecuteChangeStyleCommand);
+            LeaveGroupCommand = new DelegateCommand(ExecuteLeaveGroupCommand);
 
             _chatController.ConnectionStateChanged += HandleConnectionStateChanged;
         }
@@ -242,6 +244,11 @@
         private void ExecuteChangeStyleCommand()
         {
             _eventAggregator.GetEvent<ChangeStyleEventArgs>().Publish(IsDarkTheme);
+        }
+
+        private void ExecuteLeaveGroupCommand()
+        {
+            _chatController.LeaveGroup(_chatController.Login, CurrentTarget);
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)

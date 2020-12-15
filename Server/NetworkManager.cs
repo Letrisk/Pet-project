@@ -18,7 +18,6 @@
         private string _transport;
         private int _port, _timeout;
         private IPAddress _ip;
-        private ConnectionStringSettings _connectionSettings;
 
         private readonly WsServer _wsServer;
 
@@ -49,6 +48,7 @@
                 _wsServer.ErrorReceived += HandleErrorReceived;
                 _wsServer.FilterReceived += HandleFilterReceived;
                 _wsServer.CreateGroupReceived += HandleCreateGroupReceived;
+                _wsServer.LeaveGroupReceived += HandleLeaveGroupReceived;
                 _wsServer.Timeout = _timeout;
             }
         }
@@ -129,6 +129,11 @@
         {
             _groupService.AddGroup(e.GroupName, e.Clients);
             _wsServer.SendGroupBroadcast(new Dictionary<string, List<string>>() { { e.GroupName, e.Clients } });
+        }
+
+        private void HandleLeaveGroupReceived(object sender, LeaveGroupReceivedEventArgs e)
+        {
+            _groupService.LeaveGroup(e.Source, e.GroupName);
         }
 
         #endregion Methods

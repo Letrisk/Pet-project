@@ -61,6 +61,7 @@
     <Compile Include="Network\Messages\FilterResponse.cs" />
     <Compile Include="Network\Messages\GroupBroadcast.cs" />
     <Compile Include="Network\Messages\GroupsListResponse.cs" />
+    <Compile Include="Network\Messages\LeaveGroupRequest.cs" />
     <Compile Include="Network\Messages\MessageBroadcast.cs" />
     <Compile Include="Network\Messages\MessageContainer.cs" />
     <Compile Include="Network\Messages\MessageRequest.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Network\[EventArgs]\FilteredMessagesReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\FilterReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\GroupsReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\LeaveGroupReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\MessageReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\OpenChatEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\OpenEventLogEventArgs.cs" />

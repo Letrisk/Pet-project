@@ -42,7 +42,7 @@
         <TextBox Grid.Row="1" Grid.Column="2" Margin="50,5,0,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="{Binding ConnectionParametres}" FontSize="18"/>
         <TextBox Grid.Row="1" Grid.Column="4" Margin="5,5,5,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Groups:" FontSize="18"/>
         <ListBox x:Name="groups" Grid.Row="2" Grid.Column="4" Grid.RowSpan="3" Style="{StaticResource PrimaryListBoxStyle}"
-                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 ItemContainerStyle="{StaticResource GroupListBoxItemStyle}"
                  ItemsSource="{Binding GroupsList}"
                  SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True"
                  Margin="5,5,5,5"></ListBox>

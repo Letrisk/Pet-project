@@ -36,6 +36,7 @@
         public event EventHandler<ErrorReceivedEventArgs> ErrorReceived;
         public event EventHandler<FilterReceivedEventArgs> FilterReceived;
         public event EventHandler<CreateGroupReceivedEventArgs> CreateGroupReceived;
+        public event EventHandler<LeaveGroupReceivedEventArgs> LeaveGroupReceived;
 
         #endregion Events
 
@@ -228,6 +229,10 @@
                 case nameof(CreateGroupRequest):
                     var createGroupRequest = ((JObject)container.Payload).ToObject(typeof(CreateGroupRequest)) as CreateGroupRequest;
                     CreateGroupReceived?.Invoke(this, new CreateGroupReceivedEventArgs(createGroupRequest.GroupName, createGroupRequest.Clients));
+                    break;
+                case nameof(LeaveGroupRequest):
+                    var leaveGroupRequest = ((JObject)container.Payload).ToObject(typeof(LeaveGroupRequest)) as LeaveGroupRequest;
+                    LeaveGroupReceived?.Invoke(this, new LeaveGroupReceivedEventArgs(leaveGroupRequest.Source, leaveGroupRequest.GroupName));
                     break;
             }
         }

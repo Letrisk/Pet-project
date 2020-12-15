@@ -18,6 +18,11 @@
             _dbController.AddGroup(groupName, clients);
         }
 
+        public void LeaveGroup(string source, string groupName)
+        {
+            _dbController.LeaveGroup(source, groupName);
+        }
+
         public Dictionary<string, List<string>> GetGroups(string login)
         {
             Dictionary<string, List<string>> groupsClients = new Dictionary<string, List<string>>();

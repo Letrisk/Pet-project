@@ -36,20 +36,27 @@
 
             try
             {
-                _dbContext.EventLog.Add(clientEvent);
-                _dbContext.SaveChanges();
+                using (var context = new DatabaseContext())
+                {
+                    context.EventLog.Add(clientEvent);
+                    context.SaveChanges();
+                }
             }
             catch (NullReferenceException)
             {
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                _dbContext.EventLog.Add(new ClientEvent
+                using (var context = new DatabaseContext())
                 {
-                    Date = DateTime.Now,
-                    MessageType = MessageType.Error,
-                    Message = errorMessage
-                });
+                    context.EventLog.Add(new ClientEvent
+                    {
+                        Date = DateTime.Now,
+                        MessageType = MessageType.Error,
+                        Message = errorMessage
+                    });
+                    context.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
@@ -63,25 +70,32 @@
 
             try
             {
-                foreach (var client in clients)
+                using (var context = new DatabaseContext())
                 {
-                    _dbContext.Clients.Find(client).Groups.Add(group);
-                }
+                    foreach (var client in clients)
+                    {
+                        context.Clients.Find(client).Groups.Add(group);
+                    }
 
-                _dbContext.Groups.Add(group);
-                _dbContext.SaveChanges();
+                    context.Groups.Add(group);
+                    context.SaveChanges();
+                }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 string errorMessage = "Такая группа уже существует";
                 Console.WriteLine(errorMessage);
 
-                _dbContext.EventLog.Add(new ClientEvent
+                using (var context = new DatabaseContext())
                 {
-                    Date = DateTime.Now,
-                    MessageType = MessageType.Error,
-                    Message = errorMessage
-                });
+                    context.EventLog.Add(new ClientEvent
+                    {
+                        Date = DateTime.Now,
+                        MessageType = MessageType.Error,
+                        Message = errorMessage
+                    });
+                    context.SaveChanges();
+                }
             }
         }
 
@@ -93,8 +107,11 @@
                 {
                     Client client = new Client { Login = login };
 
-                    _dbContext.Clients.Add(client);
-                    _dbContext.SaveChanges();
+                    using (var context = new DatabaseContext())
+                    {
+                        context.Clients.Add(client);
+                        context.SaveChanges();
+                    }
                 }
             }
             catch(NullReferenceException)
@@ -102,12 +119,16 @@
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                _dbContext.EventLog.Add(new ClientEvent
+                using (var context = new DatabaseContext())
                 {
-                    Date = DateTime.Now,
-                    MessageType = MessageType.Error,
-                    Message = errorMessage
-                });
+                    context.EventLog.Add(new ClientEvent
+                    {
+                        Date = DateTime.Now,
+                        MessageType = MessageType.Error,
+                        Message = errorMessage
+                    });
+                    context.SaveChanges();
+                }
             }           
         }
 
@@ -150,6 +171,18 @@
             List<Client> clients = _dbContext.Clients.ToList();
 
             return clients;
+        }
+
+        public void LeaveGroup(string source, string groupName)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var client = context.Clients.Find(source);
+                var group = context.Groups.Find(groupName);
+
+                group.Clients.Remove(client);
+                context.SaveChanges();
+            }
         }
 
         #endregion Properties
