@@ -47,9 +47,9 @@
 
         #region Methods
 
-        public void SendFilterRequest(DateTime firstDate, DateTime secondDate, string[] messageTypes)
+        public void SendFilterRequest(DateTime firstDate, DateTime secondDate, MessageType messageTypes)
         {
-            _controller.Send(new FilterRequest(_login, firstDate, secondDate, messageTypes).GetContainer());
+            _controller.Send(new FilterRequest(firstDate, secondDate, messageTypes).GetContainer());
         }
 
         #endregion Methods

@@ -7,9 +7,18 @@
     {
         #region Fields
 
-        private DatabaseController _dbController = new DatabaseController();
+        private DatabaseController _dbController;
 
         #endregion Fields
+
+        #region Constructors
+
+        public TextMessageService()
+        {
+            _dbController = new DatabaseController();
+        }
+
+        #endregion Constructors
 
         #region Methods
 
@@ -18,9 +27,9 @@
             _dbController.AddMessage(source, target, message, date);
         }
 
-        public Dictionary<string, string> GetClientMessages(string client)
+        public Dictionary<string, List<string>> GetClientMessages(string client)
         {
-            Dictionary<string, string> clientMessages = new Dictionary<string, string>() { { "General", String.Empty } };
+            Dictionary<string, List<string>> clientMessages = new Dictionary<string, List<string>>() { { "General", new List<string>() } };
 
             List<Message> messages = _dbController.GetMessageLog(client);
 
@@ -32,7 +41,7 @@
 
                 if (String.IsNullOrEmpty(msg.Target))
                 {
-                    clientMessages["General"] += message;
+                    clientMessages["General"].Add(message);
                 }
                 else
                 {
@@ -40,19 +49,19 @@
                     {
                         if (!clientMessages.ContainsKey(msg.Source))
                         {
-                            clientMessages.Add(msg.Source, String.Empty);
+                            clientMessages.Add(msg.Source, new List<string>());
                         }
 
-                        clientMessages[msg.Source] += message;
+                        clientMessages[msg.Source].Add(message);
                     }
                     else
                     {
                         if (!clientMessages.ContainsKey(msg.Target))
                         {
-                            clientMessages.Add(msg.Target, String.Empty);
+                            clientMessages.Add(msg.Target, new List<string>());
                         }
 
-                        clientMessages[msg.Target] += message;
+                        clientMessages[msg.Target].Add(message);
                     }
                 }
             });

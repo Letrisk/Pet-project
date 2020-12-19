@@ -13,11 +13,20 @@
     {
         #region Fields
 
-        private readonly DatabaseContext _dbContext = new DatabaseContext();
+        private readonly DatabaseContext _dbContext;
 
         #endregion Fields
-        
-        #region Properties
+
+        #region Constructors
+
+        public DatabaseController()
+        {
+            _dbContext = new DatabaseContext();
+        }
+
+        #endregion Constructors
+
+        #region Methods
 
         public void AddMessage(string source, string target, string messageText, DateTime date)
         {
@@ -148,11 +157,11 @@
             return messageLog;
         }
 
-        public List<ClientEvent> GetClientEventLog(DateTime firstDate, DateTime secondDate, string[] messageTypes)
+        public List<ClientEvent> GetClientEventLog(DateTime firstDate, DateTime secondDate, MessageType messageTypes)
         {
             List<ClientEvent> clientEventLog = new List<ClientEvent>();
 
-            var clientEvents = _dbContext.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.Contains(e.MessageType.ToString()));
+            var clientEvents = _dbContext.EventLog.Where(e => e.Date >= firstDate && e.Date <= secondDate && messageTypes.HasFlag(e.MessageType));
 
             return (clientEventLog = clientEvents.ToList<ClientEvent>());
         }
@@ -185,6 +194,6 @@
             }
         }
 
-        #endregion Properties
+        #endregion Methods
     }
 }

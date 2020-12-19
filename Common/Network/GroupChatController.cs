@@ -12,12 +12,6 @@
 
         #endregion Fields
 
-        #region Properties
-
-        public string Login { get; set; }
-
-        #endregion Properties
-
         #region Constructors
 
         public GroupChatController(IController controller)

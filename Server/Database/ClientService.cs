@@ -7,9 +7,18 @@
     {
         #region Fields
 
-        private DatabaseController _dbController = new DatabaseController();
+        private DatabaseController _dbController;
 
         #endregion Fields
+
+        #region Constructors
+
+        public ClientService()
+        {
+            _dbController = new DatabaseController();
+        }
+
+        #endregion Constructors
 
         #region Methods
 

@@ -12,26 +12,14 @@
 
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+
     public class ConnectionController : IConnectionController
     {
         #region Fields
 
-        private readonly IChatController _chatController;
-        private readonly IEventLogController _eventLogController;
-        private readonly IGroupChatController _groupChatController;
         private readonly IController _controller;
 
-        private WebSocket _socket;
-
-        private string _login;
-
         #endregion Fields
-
-        #region Properties
-
-        public bool IsConnected => _socket?.ReadyState == WebSocketState.Open;
-
-        #endregion Properties
 
         #region Events
 
@@ -42,13 +30,12 @@
 
         #region Constructors
 
-        public ConnectionController(IController controller, IChatController chatController, IEventLogController eventLogController,
-                                    IGroupChatController groupChatController)
+        public ConnectionController(IController controller)
         {
             _controller = controller;
-            _chatController = chatController;
-            _eventLogController = eventLogController;
-            _groupChatController = groupChatController;
+
+            _controller.ConnectionStateChanged += HandleConnectionStateChanged;
+            _controller.ErrorReceived += HandleErrorReceived;
         }
 
         #endregion Constructors
@@ -57,73 +44,28 @@
 
         public void Connect(string address, string port)
         {
-            _socket = new WebSocket($"ws://{address}:{port}");
-            _socket.OnOpen += OnOpen;
-            _socket.OnClose += OnClose;
-            _socket.OnMessage += OnMessage;
-            _socket.ConnectAsync();
-
-            _controller.Socket = _socket;
-            _chatController.Socket = _socket;
+            _controller.Connect(address, port);
         }
 
         public void Disconnect()
         {
-            if (_socket == null)
-                return;
-
-            if (IsConnected)
-                _socket.CloseAsync();
-
-            _socket.OnOpen -= OnOpen;
-            _socket.OnClose -= OnClose;
-            _socket.OnMessage -= OnMessage;
-
-            _socket = null;
-            _login = string.Empty;
+            _controller.Disconnect();
         }
 
         public void Login(string login)
         {            
-            _login = login;
-            _groupChatController.Login = login;
-            _controller.Send(new ConnectionRequest(_login).GetContainer());
+            _controller.Login = login;
+            _controller.Send(new ConnectionRequest(login).GetContainer());
         }
 
-        private void OnMessage(object sender, MessageEventArgs e)
+        public void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
-            if (!e.IsText)
-                return;
-
-            var container = JsonConvert.DeserializeObject<MessageContainer>(e.Data);
-
-            switch (container.Identifier)
-            {
-                case nameof(ConnectionResponse):
-                    var connectionResponse = ((JObject)container.Payload).ToObject(typeof(ConnectionResponse)) as ConnectionResponse;
-                    if (connectionResponse.Result == ResultCodes.Failure)
-                    {
-                        _login = string.Empty;
-                        string source = string.Empty;
-                        ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs(connectionResponse.Reason, connectionResponse.Date));
-                    }
-
-                    _chatController.Login = _login;
-                    _eventLogController.Login = _login;
-
-                    ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true, connectionResponse.OnlineClients));
-                    break;
-            }
+            ConnectionStateChanged?.Invoke(this, e);
         }
 
-        private void OnClose(object sender, CloseEventArgs e)
+        public void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
         {
-            ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
-        }
-
-        private void OnOpen(object sender, System.EventArgs e)
-        {
-            ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true));
+            ErrorReceived?.Invoke(this, e);
         }
 
         #endregion Methods

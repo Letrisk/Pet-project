@@ -19,7 +19,7 @@
         public int Port { get; set; }
 
         [XmlElement("timeout")]
-        public int Timeout { get; set; }
+        public long Timeout { get; set; }
 
         [XmlElement("dbName")]
         public string DbName { get; set; }

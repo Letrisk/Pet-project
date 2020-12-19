@@ -9,9 +9,18 @@
     {
         #region Fields
 
-        private DatabaseController _dbController = new DatabaseController();
+        private DatabaseController _dbController;
 
         #endregion Fields
+
+        #region Constructors
+
+        public ClientEventService()
+        {
+            _dbController = new DatabaseController();
+        }
+
+        #endregion Constructors
 
         #region Methods
 
@@ -20,15 +29,15 @@
             _dbController.AddClientEvent(messageType, message, date);
         }
 
-        public string GetClientEvents(DateTime firstDate, DateTime secondDate, string[] messageTypes)
+        public List<string> GetClientEvents(DateTime firstDate, DateTime secondDate, MessageType messageTypes)
         {
-            string clientEvents = String.Empty;
+            List<string> clientEvents = new List<string>();
 
             List<ClientEvent> clientEventsList = _dbController.GetClientEventLog(firstDate, secondDate, messageTypes);
 
             foreach (ClientEvent clientEvent in clientEventsList)
             {
-                clientEvents += $"{clientEvent.Date} {clientEvent.MessageType} : {clientEvent.Message}\n";
+                clientEvents.Add($"{clientEvent.Date} {clientEvent.MessageType} : {clientEvent.Message}\n");
             }
 
             return clientEvents;

@@ -11,13 +11,13 @@
         public DateTime FirstDate { get; }
         public DateTime SecondDate { get; }
 
-        public string[] MessageTypes { get; }
+        public MessageType MessageTypes { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public FilterReceivedEventArgs(string login, DateTime firstDate, DateTime secondDate, string[] messageTypes)
+        public FilterReceivedEventArgs(string login, DateTime firstDate, DateTime secondDate, MessageType messageTypes)
         {
             Login = login;
             FirstDate = firstDate;

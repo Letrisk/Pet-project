@@ -81,6 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client.cs" />
     <Compile Include="ViewModel\ChatViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\EventLogViewModel.cs" />
@@ -198,6 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Themes\ResourceDictionaries\Images\moonIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\ResourceDictionaries\Images\onlineIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\ResourceDictionaries\Images\offlineIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

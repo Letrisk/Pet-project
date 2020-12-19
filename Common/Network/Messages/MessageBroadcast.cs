@@ -20,7 +20,7 @@
 
         #region Constructors
 
-        public MessageBroadcast(string source, string target, string message, DateTime date, string groupName = null)
+        public MessageBroadcast(string source, string target, string message, DateTime date, string groupName)
         {
             Message = message;
             Source = source;

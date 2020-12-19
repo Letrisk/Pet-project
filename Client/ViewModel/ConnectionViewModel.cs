@@ -26,14 +26,18 @@
 
         #region Fields
 
-        private IConnectionController _connectionController;
-        private IEventAggregator _eventAggregator;
+        private readonly IConnectionController _connectionController;
+        private readonly IEventAggregator _eventAggregator;
 
-        private Visibility _connectionVisibility = Visibility.Visible;
+        private Visibility _connectionVisibility;
 
-        private string _currentAddress = "192.168.37.147", _currentPort = "65000", _currentLogin, _guideText = "Введите адрес и порт";
+        private string _address;
+        private string _port;
+        private string _login;
+        private string _guideText;
 
-        private bool _isLoginEnable = false, _isDarkTheme;
+        private bool _isAuthorized;
+        private bool _isDarkTheme;
 
         #endregion Fields
 
@@ -45,22 +49,22 @@
             set => SetProperty(ref _connectionVisibility, value);
         }
 
-        public string CurrentAddress
+        public string Address
         {
-            get => _currentAddress;
-            set => SetProperty(ref _currentAddress, value);
+            get => _address;
+            set => SetProperty(ref _address, value);
         }
 
-        public string CurrentPort
+        public string Port
         {
-            get => _currentPort;
-            set => SetProperty(ref _currentPort, value);
+            get => _port;
+            set => SetProperty(ref _port, value);
         }
 
-        public string CurrentLogin
+        public string Login
         {
-            get => _currentLogin;
-            set => SetProperty(ref _currentLogin, value);
+            get => _login;
+            set => SetProperty(ref _login, value);
         }
 
         public string GuideText
@@ -69,10 +73,10 @@
             set => SetProperty(ref _guideText, value);
         }
 
-        public bool IsLoginEnable
+        public bool IsAuthorized
         {
-            get => _isLoginEnable;
-            set => SetProperty(ref _isLoginEnable, value);
+            get => _isAuthorized;
+            set => SetProperty(ref _isAuthorized, value);
         }
 
         public bool IsDarkTheme
@@ -94,10 +98,20 @@
             _eventAggregator = eventAggregator;
             _connectionController = connectionController;
 
+            _connectionVisibility = Visibility.Visible;
+            _address = "192.168.37.147";
+            _port = "65000";
+            _guideText = "Введите адрес и порт";
+            _isAuthorized = false;
+
             eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
+            eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleDisconnection);
 
             StartCommand = new DelegateCommand(ExecuteStartCommand);
             LoginCommand = new DelegateCommand(ExecuteLoginCommand);
+
+            _connectionController.ConnectionStateChanged += HandleConnectionStateChanged;
+            _connectionController.ErrorReceived += HandleErrorReceived;
         }
 
         #endregion Constructors
@@ -106,14 +120,9 @@
 
         private void ExecuteStartCommand()
         {
-            _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;
-            _connectionController?.Disconnect();
-
             try
             {
-                _connectionController.ConnectionStateChanged += HandleConnectionStateChanged;
-                _connectionController.ErrorReceived += HandleErrorReceived;
-                _connectionController.Connect(CurrentAddress, CurrentPort);
+                _connectionController.Connect(Address, Port);
             }
 
             catch (Exception ex)
@@ -124,7 +133,7 @@
 
         private void ExecuteLoginCommand()
         {
-            _connectionController?.Login(CurrentLogin);
+            _connectionController.Login(Login);
             ConnectionVisibility = Visibility.Collapsed;
         }
 
@@ -135,33 +144,32 @@
                 if (string.IsNullOrEmpty(e.Client))
                 {
                     GuideText = $"Авторизуйтесь, чтобы отправлять сообщения.\n";
-                    IsLoginEnable = true;
+                    IsAuthorized = true;
                 }
                 else
                 {
                     GuideText = $"Авторизация выполнена успешно.\n";
-
-                    //ConnectionVisibility = Visibility.Collapsed;
+                    _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
                 }
-            }
-            else
-            {
-                CurrentLogin = String.Empty;
-                IsLoginEnable = false;
-                _connectionController.ConnectionStateChanged -= HandleConnectionStateChanged;
-
-                ConnectionVisibility = Visibility.Visible;
             }
         }
 
         private void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
         {
-            CurrentLogin = e.Reason;
+            MessageBox.Show(e.Reason);
         }
 
         private void HandleChangeStyle(bool isDarkTheme)
         {
             IsDarkTheme = isDarkTheme;
+        }
+
+        private void HandleDisconnection()
+        {
+            Login = String.Empty;
+            IsAuthorized = false;
+
+            ConnectionVisibility = Visibility.Visible;
         }
 
         #endregion Methods

@@ -18,7 +18,7 @@
 
         #region Methods
 
-        void SendFilterRequest(DateTime firstDate, DateTime secondDate, string[] messageTypes);
+        void SendFilterRequest(DateTime firstDate, DateTime secondDate, MessageType messageTypes);
 
         #endregion Methods
     }

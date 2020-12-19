@@ -4,17 +4,14 @@
     {
         #region Properties
 
-        public string Source { get; set; }
-
         public string GroupName { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public LeaveGroupRequest(string source, string groupName)
+        public LeaveGroupRequest(string groupName)
         {
-            Source = source;
             GroupName = groupName;
         }
 

@@ -20,17 +20,20 @@
     {
         #region Fields
 
-        private IEventAggregator _eventAggregator;
-        private IGroupChatController _groupChatController;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly IGroupChatController _groupChatController;
 
-        private ObservableCollection<string> _clients = new ObservableCollection<string>();
-        private ObservableCollection<string> _groupClients = new ObservableCollection<string>();
+        private ObservableCollection<string> _clients;
+        private ObservableCollection<string> _groupClients;
 
-        private string _currentTarget, _deleteCurrentTarget, _groupName;
+        private string _currentTarget;
+        private string _deleteCurrentTarget;
+        private string _groupName;
 
-        private bool _isApplyEnable = false, _isDarkTheme;
+        private bool _isApplyEnable;
+        private bool _isDarkTheme;
 
-        private Visibility _groupChatVisibility = Visibility.Collapsed;
+        private Visibility _groupChatVisibility;
 
         #endregion Fields
 
@@ -136,6 +139,11 @@
 
             _groupChatController = groupChatController;
 
+            _clients = new ObservableCollection<string>();
+            _groupClients = new ObservableCollection<string>();
+            _isApplyEnable = false;
+            _groupChatVisibility = Visibility.Collapsed;
+
             GroupChatCommand = new DelegateCommand(ExecuteGroupChatCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
             
@@ -147,7 +155,6 @@
 
         private void ExecuteGroupChatCommand()
         {
-            _groupClients.Add(_groupChatController.Login);
             _groupChatController.SendCreateGroupRequest(_groupName, _groupClients.ToList());
             _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
             GroupChatVisibility = Visibility.Collapsed;

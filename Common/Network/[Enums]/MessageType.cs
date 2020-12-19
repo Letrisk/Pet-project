@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Common.Network
 {
+    [Flags]
     public enum MessageType
     {
-        Message,
-        Event,
-        Error
+        Message = 1,
+        Event = 2,
+        Error = 4
     }
 }

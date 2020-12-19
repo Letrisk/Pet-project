@@ -4,9 +4,7 @@
 
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext() : base("DBConnection")
-        {
-        }
+        #region Properties
 
         public DbSet<Client> Clients { get; set; }
 
@@ -15,5 +13,15 @@
         public DbSet<Message> Messages { get; set; }
 
         public DbSet<Group> Groups { get; set; }
+
+        #endregion Properties
+
+        #region Constructors
+
+        public DatabaseContext() : base("DBConnection")
+        {
+        }
+
+        #endregion Constructors
     }
 }

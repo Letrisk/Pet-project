@@ -17,38 +17,13 @@
     {
         #region Fields
 
-        private IController _controller;
-
-        private WebSocket _socket;
-
-        private string _login;
+        private readonly IController _controller;
 
         #endregion Fields
 
         #region Properties
 
-        public bool IsConnected => _socket?.ReadyState == WebSocketState.Open;
-
-        public WebSocket Socket
-        {
-            get => _socket;
-            set
-            {
-                _socket = value;
-                _socket.OnOpen += OnOpen;
-                _socket.OnMessage += OnMessage;
-                _socket.OnClose += OnClose;
-            }
-        }
-
-        public string Login
-        {
-            get => _login;
-            set
-            {
-                _login = value;
-            }
-        }
+        public string Login { get; set; }
 
         #endregion Properties
 
@@ -69,6 +44,13 @@
         public ChatController(IController controller)
         {
             _controller = controller;
+            _controller.ConnectionStateChanged += HandleConnectionStateChanged;
+            _controller.ConnectionReceived += HandleConnectionReceived;
+            _controller.MessageReceived += HandleMessageReceived;
+            _controller.ClientsListReceived += HandleClientListReceived;
+            _controller.ChatHistoryReceived += HandleChatHistoryReceived;
+            _controller.FilteredMessagesReceived += HandleFilteredMessagesReceived;
+            _controller.GroupsReceived += HandleGroupsListReceived;
         }
 
         #endregion Constructors
@@ -77,90 +59,61 @@
 
         public void Disconnect()
         {
-            if (_socket == null)
-                return;
-
-            if (IsConnected)
-                _socket.CloseAsync();
-
-            _socket.OnOpen -= OnOpen;
-            _socket.OnClose -= OnClose;
-            _socket.OnMessage -= OnMessage;
-
-            _socket = null;
-            _login = string.Empty;
+            Login = String.Empty;
+            _controller.Disconnect();
         }
 
-        public void Send(string source, string target, string message, string groupName)
+        public void Send(string target, string message, string groupName)
         {
-            _controller.Send(new MessageRequest(source, target, message, groupName).GetContainer());
+            if(target == "General")
+            {
+                target = String.Empty;
+            }
+
+            _controller.Send(new MessageRequest(target, message, groupName).GetContainer());
         }
 
         public void LeaveGroup(string source, string groupName)
         {
-            _controller.Send(new LeaveGroupRequest(source, groupName).GetContainer());
+            _controller.Send(new LeaveGroupRequest(groupName).GetContainer());
         }
 
-        private void OnMessage(object sender, MessageEventArgs e)
+        public void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
-            if (!e.IsText)
-                return;
-
-            var container = JsonConvert.DeserializeObject<MessageContainer>(e.Data);
-
-            switch (container.Identifier)
+            if (!String.IsNullOrEmpty(e.Client))
             {
-                case nameof(ConnectionResponse):
-                    var connectionResponse = ((JObject)container.Payload).ToObject(typeof(ConnectionResponse)) as ConnectionResponse;
-                    if (connectionResponse.Result == ResultCodes.Failure)
-                    {
-                        _login = string.Empty;
-                        string source = string.Empty;
-                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs(source, _login, connectionResponse.Reason, connectionResponse.Date));
-                    }
-                    ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true, connectionResponse.OnlineClients));
-                    break;
-                case nameof(ConnectionBroadcast):
-                    var connectionBroadcast = ((JObject)container.Payload).ToObject(typeof(ConnectionBroadcast)) as ConnectionBroadcast;
-                    ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connectionBroadcast.Login, connectionBroadcast.IsConnected, connectionBroadcast.Date));
-                    break;
-                case nameof(MessageBroadcast):
-                    var messageBroadcast = ((JObject)container.Payload).ToObject(typeof(MessageBroadcast)) as MessageBroadcast;
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBroadcast.Source, messageBroadcast.Target, messageBroadcast.Message, messageBroadcast.Date,
-                                                                               messageBroadcast.GroupName));
-                    break;
-                case nameof(ChatHistoryResponse):
-                    var chatHistoryResponse = ((JObject)container.Payload).ToObject(typeof(ChatHistoryResponse)) as ChatHistoryResponse;
-                    ChatHistoryReceived?.Invoke(this, new ChatHistoryReceivedEventArgs(chatHistoryResponse.ClientMessages));
-                    break;
-                case nameof(FilterResponse):
-                    var filterResponse = ((JObject)container.Payload).ToObject(typeof(FilterResponse)) as FilterResponse;
-                    FilteredMessagesReceived?.Invoke(this, new FilteredMessagesReceivedEventArgs(filterResponse.FilteredMessages));
-                    break;
-                case nameof(ClientsListResponse):
-                    var clientsListResponse = ((JObject)container.Payload).ToObject(typeof(ClientsListResponse)) as ClientsListResponse;
-                    ClientsListReceived?.Invoke(this, new ClientsListReceivedEventArgs(clientsListResponse.Clients));
-                    break;
-                case nameof(GroupsListResponse):
-                    var groupsListResponse = ((JObject)container.Payload).ToObject(typeof(GroupsListResponse)) as GroupsListResponse;
-                    GroupsReceived?.Invoke(this, new GroupsReceivedEventArgs(groupsListResponse.Groups));
-                    break;
-                case nameof(GroupBroadcast):
-                    var groupBroadcast = ((JObject)container.Payload).ToObject(typeof(GroupBroadcast)) as GroupBroadcast;
-                    GroupsReceived?.Invoke(this, new GroupsReceivedEventArgs(groupBroadcast.Group));
-                    break;
+                ConnectionStateChanged?.Invoke(this, e);
             }
         }
 
-        private void OnClose(object sender, CloseEventArgs e)
+        public void HandleConnectionReceived(object sender, ConnectionReceivedEventArgs e)
         {
-            ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, false));
-            _login = String.Empty;
+            ConnectionReceived?.Invoke(this, e);
         }
 
-        private void OnOpen(object sender, System.EventArgs e)
+        public void HandleMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(_login, DateTime.Now, true));
+            MessageReceived?.Invoke(this, e);
+        }
+
+        public void HandleClientListReceived(object sender, ClientsListReceivedEventArgs e)
+        {
+            ClientsListReceived?.Invoke(this, e);
+        }
+
+        public void HandleChatHistoryReceived(object sender, ChatHistoryReceivedEventArgs e)
+        {
+            ChatHistoryReceived?.Invoke(this, e);
+        }
+
+        public void HandleFilteredMessagesReceived(object sender, FilteredMessagesReceivedEventArgs e)
+        {
+            FilteredMessagesReceived?.Invoke(this, e);
+        }
+
+        public void HandleGroupsListReceived(object sender, GroupsReceivedEventArgs e)
+        {
+            GroupsReceived?.Invoke(this, e);
         }
 
         #endregion Methods

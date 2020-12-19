@@ -14,7 +14,8 @@
 
         private string _transport;
 
-        private int _port, _timeout;
+        private int _port;
+        private long _timeout;
 
         private IPAddress _ip;
 
@@ -36,7 +37,7 @@
             set => _port = value;
         }
 
-        public int Timeout
+        public long Timeout
         {
             get => _timeout;
             set => _timeout = value;

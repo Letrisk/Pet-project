@@ -1,16 +1,18 @@
 ﻿namespace Common.Network.Messages
 {
+    using System.Collections.Generic;
+
     public class FilterResponse
     {
         #region Properties
 
-        public string FilteredMessages { get; set; }
+        public List<string> FilteredMessages { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public FilterResponse(string filteredMessages)
+        public FilterResponse(List<string> filteredMessages)
         {
             FilteredMessages = filteredMessages;
         }

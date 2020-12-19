@@ -6,20 +6,17 @@
     {
         #region Properties
 
-        public string Login { get; set; }
-
         public DateTime FirstDate { get; set; }
         public DateTime SecondDate { get; set; }
 
-        public string[] MessageTypes { get; set; }
+        public MessageType MessageTypes { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public FilterRequest(string login, DateTime firstDate, DateTime secondDate, string[] messageType)
+        public FilterRequest(DateTime firstDate, DateTime secondDate, MessageType messageType)
         {
-            Login = login;
             FirstDate = firstDate;
             SecondDate = secondDate;
             MessageTypes = messageType;

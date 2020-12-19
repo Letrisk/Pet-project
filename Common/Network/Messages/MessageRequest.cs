@@ -5,7 +5,6 @@
         #region Properties
 
         public string Message { get; set; }
-        public string Source { get; set; }
         public string Target { get; set; }
         public string GroupName { get; set; }
 
@@ -13,9 +12,8 @@
 
         #region Constructors
 
-        public MessageRequest(string source, string target, string message, string groupName)
+        public MessageRequest(string target, string message, string groupName)
         {
-            Source = source;
             Target = target;
             Message = message;
             GroupName = groupName;

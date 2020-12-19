@@ -20,9 +20,9 @@
         private readonly IPEndPoint _listenAddress;
         private readonly ConcurrentDictionary<Guid, WsConnection> _connections;
 
-        private Dictionary<Guid, DateTime> _timeoutClients;
-        private Timer _timeoutTimer;
-        private int _timeout;
+        private readonly Dictionary<Guid, long> _timeoutClients;
+        private readonly Timer _timeoutTimer;
+        private long _timeout;
 
         private WebSocketServer _server;
 
@@ -46,7 +46,7 @@
         {
             _listenAddress = listenAddress;
             _connections = new ConcurrentDictionary<Guid, WsConnection>();
-            _timeoutClients = new Dictionary<Guid, DateTime>();
+            _timeoutClients = new Dictionary<Guid, long>();
             _timeoutTimer = new Timer();
 
             _timeoutTimer.AutoReset = true;
@@ -60,7 +60,7 @@
 
         #region Methods
 
-        public int Timeout
+        public long Timeout
         {
             get => _timeout;
             set => _timeout = value;
@@ -93,15 +93,13 @@
             _connections.Clear();
         }
 
-        public void SendMessageBroadcast(string source, string target, string message, string groupName = null)
+        public void Send(string source, string target, MessageContainer message)
         {
-            var messageBroadcast = new MessageBroadcast(source, target, message, DateTime.Now, groupName).GetContainer();
-
-            if (string.IsNullOrEmpty(target) || !String.IsNullOrEmpty(groupName))
+            if (String.IsNullOrEmpty(target))
             {
                 foreach (var connection in _connections)
                 {
-                    connection.Value?.Send(messageBroadcast);
+                    connection.Value?.Send(message);
                 }
             }
             else
@@ -110,74 +108,15 @@
                 {
                     if (connection.Value.Login == target || connection.Value.Login == source)
                     {
-                        connection.Value?.Send(messageBroadcast);
+                        connection.Value?.Send(message);
                     }
                 }
             }
         }
 
-        public void SendConnectionBroadcast (string login, bool isConnected)
-        {
-            var connectionBroadcast = new ConnectionBroadcast(login, isConnected, DateTime.Now).GetContainer();
-
-            var connections = _connections.Where(item => item.Value.Login != login);
-            
-            foreach(var connection in connections)
-            {
-                connection.Value?.Send(connectionBroadcast);
-            }
-
-        }
-
-        public void SendChatHistory (string login, Dictionary<string,string> chatHistory)
-        {
-            var chatHistoryResponse = new ChatHistoryResponse(chatHistory).GetContainer();
-
-            var connections = _connections.Select(item => item.Value).ToArray();
-
-            Array.Find(connections, item => item.Login == login)?.Send(chatHistoryResponse);
-        }
-
-        public void SendFilteredMessages(string login, string filteredMessages)
-        {
-            var filterResponse = new FilterResponse(filteredMessages).GetContainer();
-
-            var connections = _connections.Select(item => item.Value).ToArray();
-
-            Array.Find(connections, item => item.Login == login)?.Send(filterResponse);
-        }
-
-        public void SendClientsList(string login, List<string> clients)
-        {
-            var clientsListResponse = new ClientsListResponse(clients).GetContainer();
-
-            var connections = _connections.Select(item => item.Value).ToArray();
-
-            Array.Find(connections, item => item.Login == login)?.Send(clientsListResponse);
-        }
-
-        public void SendGroups(string login, Dictionary<string, List<string>> groups)
-        {
-            var groupsResponse = new GroupsListResponse(groups).GetContainer();
-
-            var connections = _connections.Select(item => item.Value).ToArray();
-
-            Array.Find(connections, item => item.Login == login)?.Send(groupsResponse);
-        }
-
-        public void SendGroupBroadcast(Dictionary<string, List<string>> group)
-        {
-            var groupBroadcast = new GroupBroadcast(group).GetContainer();
-
-            foreach(var connection in _connections)
-            {
-                connection.Value?.Send(groupBroadcast);
-            }
-        }
-
         private void OnTimeoutEvent(object sender, ElapsedEventArgs e)
         {
-            var timedClients = _timeoutClients.Where(item => item.Value <= e.SignalTime).Select(item => item.Key).ToList();
+            var timedClients = _timeoutClients.Where(item => DateTime.Now.Ticks - item.Value >= Timeout).Select(item => item.Key).ToList();
             foreach (Guid client in timedClients)
             {
                 _timeoutClients?.Remove(client);
@@ -191,7 +130,7 @@
             if (!_connections.TryGetValue(clientId, out WsConnection connection))
                 return;
 
-            _timeoutClients[clientId] = DateTime.Now.AddSeconds(Timeout);
+            _timeoutClients[clientId] = DateTime.Now.Ticks;
 
             switch (container.Identifier)
             {
@@ -211,7 +150,7 @@
                     }
                     else
                     {
-                       connection.Login = connectionRequest.Login;
+                        connection.Login = connectionRequest.Login;
                         connectionResponse.OnlineClients = _connections.Select(item => item.Value.Login).ToArray();
                         connection.Send(connectionResponse.GetContainer());
                         ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, true));
@@ -220,19 +159,20 @@
                     break;
                 case nameof(MessageRequest):
                     var messageRequest = ((JObject)container.Payload).ToObject(typeof(MessageRequest)) as MessageRequest;
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageRequest.Source, messageRequest.Target, messageRequest.Message, DateTime.Now, messageRequest.GroupName));
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(connection.Login, messageRequest.Target, messageRequest.Message, DateTime.Now, messageRequest.GroupName));
                     break;
                 case nameof(FilterRequest):
                     var filterRequest = ((JObject)container.Payload).ToObject(typeof(FilterRequest)) as FilterRequest;
-                    FilterReceived?.Invoke(this, new FilterReceivedEventArgs(filterRequest.Login, filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
+                    FilterReceived?.Invoke(this, new FilterReceivedEventArgs(connection.Login, filterRequest.FirstDate, filterRequest.SecondDate, filterRequest.MessageTypes));
                     break;
                 case nameof(CreateGroupRequest):
                     var createGroupRequest = ((JObject)container.Payload).ToObject(typeof(CreateGroupRequest)) as CreateGroupRequest;
+                    createGroupRequest.Clients.Add(connection.Login);
                     CreateGroupReceived?.Invoke(this, new CreateGroupReceivedEventArgs(createGroupRequest.GroupName, createGroupRequest.Clients));
                     break;
                 case nameof(LeaveGroupRequest):
                     var leaveGroupRequest = ((JObject)container.Payload).ToObject(typeof(LeaveGroupRequest)) as LeaveGroupRequest;
-                    LeaveGroupReceived?.Invoke(this, new LeaveGroupReceivedEventArgs(leaveGroupRequest.Source, leaveGroupRequest.GroupName));
+                    LeaveGroupReceived?.Invoke(this, new LeaveGroupReceivedEventArgs(connection.Login, leaveGroupRequest.GroupName));
                     break;
             }
         }
@@ -240,7 +180,7 @@
         internal void AddConnection(WsConnection connection)
         {
             _connections.TryAdd(connection.Id, connection);
-            _timeoutClients.Add(connection.Id, DateTime.Now.AddSeconds(Timeout));
+            _timeoutClients.Add(connection.Id, DateTime.Now.Ticks);
         }
 
         internal void FreeConnection(Guid id)

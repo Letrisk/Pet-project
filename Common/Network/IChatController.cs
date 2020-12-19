@@ -24,8 +24,6 @@
 
         #region Properties
 
-        WebSocket Socket { get; set; }
-
         string Login { get; set; }
 
         #endregion Properties
@@ -34,7 +32,7 @@
 
         void Disconnect();
 
-        void Send(string source, string target, string message, string groupName = null);
+        void Send(string target, string message, string groupName);
 
         void LeaveGroup(string source, string groupName);
 

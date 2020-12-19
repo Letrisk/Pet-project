@@ -30,19 +30,19 @@
         <Label Grid.Row="0" Grid.Column="0" Content="Address:" Style="{StaticResource PrimaryLabelStyle}"></Label>
         <Label Grid.Row="0" Grid.Column="1" Content="Port:" Style="{StaticResource PrimaryLabelStyle}"></Label>
         <TextBox x:Name="serverAddress" Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryTextBoxStyle}" 
-                 Margin="5,0,30,0" FontSize="16" Text="{Binding CurrentAddress}"></TextBox>
+                 Margin="5,0,30,0" FontSize="16" Text="{Binding Address}"></TextBox>
         <TextBox x:Name="serverPort" Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryTextBoxStyle}"
-                 Margin="0,0,5,0" FontSize="16" Text="{Binding CurrentPort}"></TextBox>
+                 Margin="0,0,5,0" FontSize="16" Text="{Binding Port}"></TextBox>
         <Button x:Name="buttonStart" Grid.Row="2" Grid.Column="0" Margin="5,30,30,15"
                 Style="{StaticResource PrimaryButtonStyle}" Content="Start" FontSize="16" Command="{Binding StartCommand}"></Button>
         <Label x:Name="labelGuide" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding GuideText}"
                HorizontalContentAlignment="Center" Background="LightGray" Margin="15,0,15,0"/>
-        <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Login:" Style="{StaticResource PrimaryLabelStyle}" IsEnabled="{Binding IsLoginEnable}"></Label>
+        <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Login:" Style="{StaticResource PrimaryLabelStyle}" IsEnabled="{Binding IsAuthorized}"></Label>
         <TextBox x:Name="login" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,0,5,0" FontSize="16" Style="{StaticResource PrimaryTextBoxStyle}" 
-                 Text="{Binding CurrentLogin}"
-                 IsEnabled="{Binding IsLoginEnable}"></TextBox>
+                 Text="{Binding Login}"
+                 IsEnabled="{Binding IsAuthorized}"></TextBox>
         <Button x:Name="buttonLogin" Grid.Row="6" Grid.Column="0" Style="{StaticResource PrimaryButtonStyle}" 
                 Margin="5,30,30,15" Content="Login" FontSize="16" Command="{Binding LoginCommand}" 
-                IsEnabled="{Binding IsLoginEnable}"></Button>
+                IsEnabled="{Binding IsAuthorized}"></Button>
     </Grid>
 </UserControl>

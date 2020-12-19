@@ -20,16 +20,24 @@
     {
         #region Fields
 
-        private IEventLogController _eventLogController;
-        private IEventAggregator _eventAggregator;
+        private readonly IEventLogController _eventLogController;
+        private readonly IEventAggregator _eventAggregator;
 
-        private DateTime _firstDate = DateTime.Now, _secondDate = DateTime.Now;
-        private int _firstDateHours, _firstDateMinutes, _firstDateSeconds, _secondDateHours, _secondDateMinutes, _secondDateSeconds;
+        private DateTime _firstDate;
+        private DateTime _secondDate;
+        private int _firstDateHours;
+        private int _firstDateMinutes;
+        private int _firstDateSeconds;
+        private int _secondDateHours;
+        private int _secondDateMinutes;
+        private int _secondDateSeconds;
 
-        private bool _isMessages, _isEvents, _isErrors, _isDarkTheme;
-        List<string> _messageTypes;
+        private bool _isMessages;
+        private bool _isEvents;
+        private bool _isErrors;
+        private bool _isDarkTheme;
 
-        private Visibility _eventLogVisibility = Visibility.Collapsed;
+        private Visibility _eventLogVisibility;
 
         #endregion Fields
 
@@ -88,51 +96,19 @@
         public bool IsMessages
         {
             get => _isMessages;
-            set { 
-                SetProperty(ref _isMessages, value);
-                if (value)
-                {
-                    _messageTypes.Add(MessageType.Message.ToString());
-                }
-                else
-                {
-                    _messageTypes.Remove(MessageType.Message.ToString());
-                }
-                }
+            set => SetProperty(ref _isMessages, value);
         }
 
         public bool IsEvents
         {
             get => _isEvents;
-            set
-            {
-                SetProperty(ref _isEvents, value);
-                if (value)
-                {
-                    _messageTypes.Add(MessageType.Event.ToString());
-                }
-                else
-                {
-                    _messageTypes.Remove(MessageType.Event.ToString());
-                }
-            }
+            set => SetProperty(ref _isEvents, value);
         }
 
         public bool IsErrors
         {
             get => _isErrors;
-            set
-            {
-                SetProperty(ref _isErrors, value);
-                if (value)
-                {
-                    _messageTypes.Add(MessageType.Error.ToString());
-                }
-                else
-                {
-                    _messageTypes.Remove(MessageType.Error.ToString());
-                }
-            }
+            set => SetProperty(ref _isErrors, value);
         }
         public bool IsDarkTheme
         {
@@ -162,10 +138,12 @@
             eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleCloseEventlog);
             eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
 
+            _firstDate = DateTime.Now;
+            _secondDate = DateTime.Now;
+            _eventLogVisibility = Visibility.Collapsed;
+
             FilterCommand = new DelegateCommand(ExecuteFilterCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
-
-            _messageTypes = new List<string>();
         }
 
         #endregion Constructors
@@ -174,7 +152,11 @@
 
         private void ExecuteFilterCommand()
         {
-            _eventLogController.SendFilterRequest(FirstDate, SecondDate, _messageTypes.ToArray());
+            var selectedTypes = IsMessages ? MessageType.Message : 0;
+            selectedTypes |= IsEvents ? MessageType.Event : 0;
+            selectedTypes |= IsErrors ? MessageType.Error : 0;
+
+            _eventLogController.SendFilterRequest(FirstDate, SecondDate, selectedTypes);
             _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
             EventLogVisibility = Visibility.Collapsed;
         }

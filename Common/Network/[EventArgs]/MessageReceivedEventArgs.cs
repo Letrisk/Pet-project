@@ -20,7 +20,7 @@
 
         #region Constructors
 
-        public MessageReceivedEventArgs(string source, string target, string message, DateTime date, string groupName = null)
+        public MessageReceivedEventArgs(string source, string target, string message, DateTime date, string groupName)
         {
             Source = source;
             Target = target;

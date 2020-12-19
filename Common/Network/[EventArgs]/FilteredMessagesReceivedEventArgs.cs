@@ -1,16 +1,18 @@
 ﻿namespace Common.Network
 {
+    using System.Collections.Generic;
+
     public class FilteredMessagesReceivedEventArgs
     {
         #region Properties
 
-        public string FilteredMessages { get; }
+        public List<string> FilteredMessages { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public FilteredMessagesReceivedEventArgs(string filteredMessages)
+        public FilteredMessagesReceivedEventArgs(List<string> filteredMessages)
         {
             FilteredMessages = filteredMessages;
         }

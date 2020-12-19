@@ -22,7 +22,86 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-    
+
+    <Style x:Key="ClientListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="border">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Login}"/>
+                            <Image x:Name="image" Grid.Column="1" Width="10" Height="10" Source="Images/offlineIcon.png"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                            <Setter Property="Source" TargetName="image" Value="Images/onlineIcon.png"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GroupListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="border">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Login}"/>
+                            <Button x:Name="leaveButton" Grid.Column="1"
+                                    Style="{StaticResource PrimaryButtonStyle}" FontSize="12" Content="Leave" Visibility="Collapsed" 
+                                    Command="{Binding Path=DataContext.LeaveGroupCommand, 
+                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                            </Button>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
+                            <Setter Property="Visibility" Value="Visible" TargetName="leaveButton"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Template">
@@ -50,7 +129,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="GroupListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+    <Style x:Key="OldGroupListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Template">
             <Setter.Value>
