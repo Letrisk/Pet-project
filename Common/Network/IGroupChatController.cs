@@ -6,7 +6,7 @@
     {
         #region Methods
 
-        void SendCreateGroupRequest(string groupName, List<string> clients);
+        void CreateGroupRequest(string groupName, List<string> clients);
 
         #endregion Methods
     }

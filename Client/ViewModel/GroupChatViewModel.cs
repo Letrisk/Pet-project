@@ -51,14 +51,7 @@
             set
             {
                 SetProperty(ref _groupClients, value);
-                if(_groupClients.Count!=0)
-                {
-                    IsApplyEnable = true;
-                }
-                else
-                {
-                    IsApplyEnable = false;
-                }
+                IsApplyEnable = _groupClients.Count != 0;
             }
         }
 
@@ -155,7 +148,7 @@
 
         private void ExecuteGroupChatCommand()
         {
-            _groupChatController.SendCreateGroupRequest(_groupName, _groupClients.ToList());
+            _groupChatController.CreateGroupRequest(_groupName, _groupClients.ToList());
             _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
             GroupChatVisibility = Visibility.Collapsed;
         }

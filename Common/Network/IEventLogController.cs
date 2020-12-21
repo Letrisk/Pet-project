@@ -10,12 +10,6 @@
 
     public interface IEventLogController
     {
-        #region Properties
-
-        string Login { get; set; }
-
-        #endregion Properties
-
         #region Methods
 
         void SendFilterRequest(DateTime firstDate, DateTime secondDate, MessageType messageTypes);

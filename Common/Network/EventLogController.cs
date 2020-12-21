@@ -19,22 +19,7 @@
 
         private readonly IController _controller;
 
-        private string _login;
-
         #endregion Fields
-
-        #region Properties
-
-        public string Login
-        {
-            get => _login;
-            set
-            {
-                _login = value;
-            }
-        }
-
-        #endregion Properties
 
         #region Constructors
 

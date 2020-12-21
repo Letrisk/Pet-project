@@ -23,7 +23,7 @@
 
         #region Methods
 
-        public void SendCreateGroupRequest(string groupName, List<string> clients)
+        public void CreateGroupRequest(string groupName, List<string> clients)
         {
             _controller.Send(new CreateGroupRequest(groupName, clients).GetContainer());
         }
