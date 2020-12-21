@@ -29,6 +29,7 @@
             containerRegistry.Register<ChatViewModel>();
             containerRegistry.Register<EventLogViewModel>();
             containerRegistry.Register<GroupChatViewModel>();
+            containerRegistry.Register<MainWindowViewModel>();
         }
 
         protected override void ConfigureViewModelLocator()
@@ -39,6 +40,7 @@
             BindViewModelToView<ChatViewModel, ChatView>();
             BindViewModelToView<EventLogViewModel, EventLogView>();
             BindViewModelToView<GroupChatViewModel, GroupChatView>();
+            BindViewModelToView<MainWindowViewModel, MainWindow>();
         }
 
         protected override Window CreateShell()

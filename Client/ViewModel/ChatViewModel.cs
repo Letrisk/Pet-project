@@ -338,7 +338,7 @@
                 if (String.IsNullOrEmpty(e.Target) || e.Target == GeneralChat)
                 {
                     Chats[GeneralChat].Add($"{e.Date} {e.Source} : {e.Message}\n");
-                    if (SelectedClient.Login == GeneralChat)
+                    if (SelectedClient?.Login == GeneralChat)
                     {
                         App.Current.Dispatcher.Invoke((Action)delegate
                         {

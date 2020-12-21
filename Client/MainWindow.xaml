@@ -9,6 +9,7 @@
         xmlns:interactivity="http://prismlibrary.com/"
         interactivity:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
         Title="MainWindow" Height="Auto" Width="Auto" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Window.Resources>
@@ -34,9 +35,10 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
+        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding SelectedViewModel}"/>
+        <!--<view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
         <view:ChatView Grid.Row="1" Visibility="{Binding ChatVisibility}"></view:ChatView>
         <view:EventLogView Grid.Row="0" Grid.Column="1" Visibility="{Binding EventLogVisibility}"></view:EventLogView>
-        <view:GroupChatView Grid.Row="1" Grid.Column="1" Visibility="{Binding GroupChatVisibility}"></view:GroupChatView>
+        <view:GroupChatView Grid.Row="1" Grid.Column="1" Visibility="{Binding GroupChatVisibility}"></view:GroupChatView>-->
     </Grid>
 </Window>
