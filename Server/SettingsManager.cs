@@ -1,12 +1,9 @@
 ﻿namespace Server
 {
-    using System;
-    using System.Xml;
     using System.Xml.Serialization;
     using System.IO;
     using System.Net;
     using System.Configuration;
-    using System.Data.SqlClient;
 
     public class SettingsManager
     {
@@ -61,10 +58,10 @@
 
         public SettingsManager(string fileName) 
         {
-            XmlSerializer ser = new XmlSerializer(typeof(Settings));
-            using (FileStream fs = new FileStream(fileName, FileMode.Open))
+            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
             {
-                Settings settings = (Settings)ser.Deserialize(fs);
+                Settings settings = (Settings)serializer.Deserialize(fileStream);
 
                 Transport = settings.Transport;
                 Ip = IPAddress.Parse(settings.Ip);
@@ -72,12 +69,6 @@
                 Timeout = settings.Timeout;
                 ConnectionSettings = new ConnectionStringSettings(settings.DbName, settings.ConnectionString, settings.ProviderName);
             }
-
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.ConnectionStrings.ConnectionStrings.Clear();
-            config.ConnectionStrings.ConnectionStrings.Add(ConnectionSettings);
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(config.ConnectionStrings.SectionInformation.Name);
         }
 
         #endregion Constructors

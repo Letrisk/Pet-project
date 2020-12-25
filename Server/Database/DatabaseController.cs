@@ -3,9 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Data.Entity;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using System.Configuration;
 
     using Common.Network;
 
@@ -14,14 +12,16 @@
         #region Fields
 
         private readonly DatabaseContext _dbContext;
+        private readonly string _connectionString;
 
         #endregion Fields
 
         #region Constructors
 
-        public DatabaseController()
+        public DatabaseController(ConnectionStringSettings connectionString)
         {
-            _dbContext = new DatabaseContext();
+            _connectionString = connectionString.ToString();
+            _dbContext = new DatabaseContext(_connectionString);
         }
 
         #endregion Constructors
@@ -32,7 +32,7 @@
         {
             Message message = new Message { Source = source, Target = target, MessageText = messageText, Date = date };
 
-            using (var context = new DatabaseContext())
+            using (var context = new DatabaseContext(_connectionString))
             {
                 context.Messages.Add(message);
                 context.SaveChanges();
@@ -45,7 +45,7 @@
 
             try
             {
-                using (var context = new DatabaseContext())
+                using (var context = new DatabaseContext(_connectionString))
                 {
                     context.EventLog.Add(clientEvent);
                     context.SaveChanges();
@@ -56,7 +56,7 @@
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                using (var context = new DatabaseContext())
+                using (var context = new DatabaseContext(_connectionString))
                 {
                     context.EventLog.Add(new ClientEvent
                     {
@@ -79,7 +79,7 @@
 
             try
             {
-                using (var context = new DatabaseContext())
+                using (var context = new DatabaseContext(_connectionString))
                 {
                     foreach (var client in clients)
                     {
@@ -95,7 +95,7 @@
                 string errorMessage = "Такая группа уже существует";
                 Console.WriteLine(errorMessage);
 
-                using (var context = new DatabaseContext())
+                using (var context = new DatabaseContext(_connectionString))
                 {
                     context.EventLog.Add(new ClientEvent
                     {
@@ -116,7 +116,7 @@
                 {
                     Client client = new Client { Login = login };
 
-                    using (var context = new DatabaseContext())
+                    using (var context = new DatabaseContext(_connectionString))
                     {
                         context.Clients.Add(client);
                         context.SaveChanges();
@@ -128,7 +128,7 @@
                 string errorMessage = "Пользователь слишком быстро отключился";
                 Console.WriteLine(errorMessage);
 
-                using (var context = new DatabaseContext())
+                using (var context = new DatabaseContext(_connectionString))
                 {
                     context.EventLog.Add(new ClientEvent
                     {
@@ -184,7 +184,7 @@
 
         public void LeaveGroup(string source, string groupName)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new DatabaseContext(_connectionString))
             {
                 var client = context.Clients.Find(source);
                 var group = context.Groups.Find(groupName);

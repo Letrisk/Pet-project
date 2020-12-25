@@ -1,7 +1,6 @@
 ﻿namespace Common.Network.Messages
 {
     using System;
-    using System.Collections.Generic;
 
     using Common.Network;
 

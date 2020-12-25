@@ -151,7 +151,7 @@
                     else
                     {
                         connection.Login = connectionRequest.Login;
-                        connectionResponse.OnlineClients = _connections.Select(item => item.Value.Login).ToArray();
+                        connectionResponse.OnlineClients = _connections.Where(item => item.Value.Login != null).Select(item => item.Value.Login).ToArray();
                         connection.Send(connectionResponse.GetContainer());
                         ConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs(connection.Login, DateTime.Now, true));
                         ConnectionReceived?.Invoke(this, new ConnectionReceivedEventArgs(connection.Login, true, DateTime.Now));

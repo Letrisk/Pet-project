@@ -1,7 +1,6 @@
 ﻿namespace Server.Database
 {
     using System;
-    using System.ComponentModel.DataAnnotations.Schema;
 
     using Common.Network;
 

@@ -2,21 +2,16 @@
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Windows.Threading;
-    using System.Threading.Tasks;
     using System.Timers;
-    using System.Windows.Media;
 
     using Prism.Commands;
     using Prism.Mvvm;
     using Prism.Events;
 
     using Common.Network;
-    using Common.Network.Messages;
 
     public class ChatViewModel : BindableBase
     {
@@ -38,9 +33,9 @@
         private Client _selectedClient;
 
         private ObservableCollection<Client> _groupsList;
-        private ObservableCollection<string> _chatMessages;
+        private ObservableCollection<Message> _chatMessages;
 
-        private Dictionary<string, List<string>> _chats;
+        private Dictionary<string, List<Message>> _chats;
 
         private int _counter;
 
@@ -57,6 +52,18 @@
 
         #region Properties
 
+        public ObservableCollection<Message> ChatMessages
+        {
+            get => _chatMessages;
+            set => SetProperty(ref _chatMessages, value);
+        }
+
+        public Dictionary<string, List<Message>> Chats
+        {
+            get => _chats;
+            set => SetProperty(ref _chats, value);
+        }
+
         public Visibility ChatVisibility
         {
             get => _chatVisibility;
@@ -67,18 +74,6 @@
         {
             get => _groupsList;
             set => SetProperty(ref _groupsList, value);
-        }
-
-        public Dictionary<string, List<string>> Chats
-        {
-            get => _chats;
-            set => SetProperty(ref _chats, value);
-        }
-
-        public ObservableCollection<string> ChatMessages
-        {
-            get => _chatMessages;
-            set => SetProperty(ref _chatMessages, value);
         }
 
         public ObservableCollection<Client> ClientsCollection
@@ -101,21 +96,7 @@
                     SetProperty(ref _selectedClient, value);
                 }
 
-                if (!_chats.ContainsKey(_selectedClient.Login))
-                {
-                    _chats.Add(_selectedClient.Login, new List<string>());
-                }
-
-                if (_groupsList.FirstOrDefault(item => item.Login == value.Login) != default)
-                {
-                    _isGroupMessage = true;
-                }
-                else
-                {
-                    _isGroupMessage = false;
-                }
-
-                ChatMessages = new ObservableCollection<string>(_chats[_selectedClient.Login]);
+                SelectedClientChanged(value);
             }
         }
 
@@ -167,12 +148,12 @@
             _timer.Elapsed += OnTimerEvent;
 
             _groupsList = new ObservableCollection<Client>();
-            _chatMessages = new ObservableCollection<string>();
+            _chatMessages = new ObservableCollection<Message>();
             _clientsCollection = new ObservableCollection<Client>();
 
             _chatVisibility = Visibility.Collapsed;
 
-            _chats = new Dictionary<string, List<string>>();
+            _chats = new Dictionary<string, List<Message>>();
 
             _counter = 0;
 
@@ -199,7 +180,7 @@
 
         #endregion Constructors
 
-      #region Methods
+        #region Methods
 
         private void OnTimerEvent(object sender, ElapsedEventArgs e)
         {
@@ -210,7 +191,7 @@
         {
             if (String.IsNullOrEmpty(CurrentMessage) || SelectedClient.Login == EventLog)
             {
-                ChatMessages.Add($"Something go wrong!");
+                ChatMessages.Add(new Message(String.Empty, $"Something go wrong!", true, DateTime.Now));
             }
             else
             {
@@ -229,21 +210,21 @@
 
         private void ExecuteStopCommand()
         {
-                /*_timer.Stop();
-                _timer.Enabled = false;*/
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    GroupsList.Clear();
-                    ChatMessages.Clear();
-                    ClientsCollection.Clear();
-                });
+            /*_timer.Stop();
+            _timer.Enabled = false;*/
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                GroupsList.Clear();
+                ChatMessages.Clear();
+                ClientsCollection.Clear();
+            });
 
-                Chats.Clear();
-                ChatVisibility = Visibility.Collapsed;
+            Chats.Clear();
+            ChatVisibility = Visibility.Collapsed;
 
-                _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
+            _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
 
-                _chatController.Disconnect();
+            _chatController.Disconnect();
         }
 
         private void ExecuteOpenEventLogCommand()
@@ -254,8 +235,8 @@
 
         private void ExecuteOpenGroupChatCommand()
         {
-            ObservableCollection<string> clients = new ObservableCollection<string>(ClientsCollection.Select(item => item.Login).Where(item => 
-                                                                                    item != GeneralChat && item != EventLog && item != _login));
+            ObservableCollection<Client> clients = new ObservableCollection<Client>(ClientsCollection.Select(item => item).Where(item => 
+                                                                                    item.Login != GeneralChat && item.Login != EventLog && item.Login != _login));
             _eventAggregator.GetEvent<OpenGroupChatEventArgs>().Publish(clients);
             ChatVisibility = Visibility.Collapsed;
         }
@@ -267,7 +248,7 @@
 
         private void ExecuteLeaveGroupCommand()
         {
-            _chatController.LeaveGroup(_login, SelectedClient.Login);
+            _chatController.LeaveGroup(SelectedClient.Login);
             GroupsList.Remove(SelectedClient);
         }
 
@@ -276,6 +257,7 @@
             if (e.IsConnected)
             {
                 _login = e.Client;
+
                 ChatVisibility = Visibility.Visible;
 
                 ConnectionParametres = $"Login: {_login}";
@@ -293,6 +275,9 @@
                     }
                 });
                 SelectedClient = ClientsCollection.FirstOrDefault(item => item.Login == GeneralChat);
+
+                /*_timer.Enabled = true;
+                _timer.Start();*/
             }
             else
             {
@@ -302,33 +287,34 @@
 
         private void HandleConnectionReceived(object sender, ConnectionReceivedEventArgs e)
         {
-            Client focusedClient = SelectedClient;
+                Client focusedClient = SelectedClient;
 
-            if (!Chats.ContainsKey(e.Login))
-            {
-                Chats.Add(e.Login, new List<string>());
-            }
-            if (e.IsConnected)
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                if (!Chats.ContainsKey(e.Login))
                 {
-                    ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = true;
-                    ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
+                    Chats.Add(e.Login, new List<Message>());
+                }
 
-                    SelectedClient = focusedClient;                       
-                });
-
-            }
-            else
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                if (e.IsConnected)
                 {
-                    ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = false;
-                    ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = true;
+                        ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
 
-                    SelectedClient = focusedClient;
-                });
-            }
+                        SelectedClient = focusedClient;
+                    });
+
+                }
+                else
+                {
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = false;
+                        ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
+
+                        SelectedClient = focusedClient;
+                    });
+                }
         }
 
         private void HandleMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -337,12 +323,12 @@
             {
                 if (String.IsNullOrEmpty(e.Target) || e.Target == GeneralChat)
                 {
-                    Chats[GeneralChat].Add($"{e.Date} {e.Source} : {e.Message}\n");
+                    Chats[GeneralChat].Add(new Message(e.Source, e.Message, e.Source == _login, e.Date));
                     if (SelectedClient?.Login == GeneralChat)
                     {
                         App.Current.Dispatcher.Invoke((Action)delegate
                         {
-                            ChatMessages = new ObservableCollection<string>(Chats[GeneralChat]);
+                            ChatMessages = new ObservableCollection<Message>(Chats[GeneralChat]);
                         });
                     }
                 }
@@ -350,23 +336,23 @@
                 {
                     if (_login == e.Source)
                     {
-                        Chats[e.Target].Add($"{e.Date} {e.Source} : {e.Message}\n");
+                        Chats[e.Target].Add(new Message(e.Source, e.Message, true, e.Date));
                         if (SelectedClient.Login == e.Target)
                         {
                             App.Current.Dispatcher.Invoke((Action)delegate
                             {
-                                ChatMessages = new ObservableCollection<string>(Chats[e.Target]);
+                                ChatMessages = new ObservableCollection<Message>(Chats[e.Target]);
                             });
                         }
                     }
                     else
                     {
-                        Chats[e.Source].Add($"{e.Date} {e.Source} : {e.Message}\n");
+                        Chats[e.Source].Add(new Message(e.Source, e.Message, false, e.Date));
                         if (SelectedClient.Login == e.Source)
                         {
                             App.Current.Dispatcher.Invoke((Action)delegate
                             {
-                                ChatMessages = new ObservableCollection<string>(Chats[e.Source]);
+                                ChatMessages = new ObservableCollection<Message>(Chats[e.Source]);
                             });
                         }
                     }
@@ -376,12 +362,12 @@
             {
                 if (GroupsList.FirstOrDefault(item => item.Login == e.GroupName) != default)
                 {
-                    Chats[e.GroupName].Add($"{e.Date} {e.Source} : {e.Message}\n");
+                    Chats[e.GroupName].Add(new Message(e.Source, e.Message, e.Source == _login, e.Date));
                     if (SelectedClient.Login == e.GroupName)
                     {
                         App.Current.Dispatcher.Invoke((Action)delegate
                         {
-                            ChatMessages = new ObservableCollection<string>(Chats[e.GroupName]);
+                            ChatMessages = new ObservableCollection<Message>(Chats[e.GroupName]);
                         });
                     }
                 }
@@ -391,13 +377,13 @@
         private void HandleChatHistoryReceived(object sender, ChatHistoryReceivedEventArgs e)
         {
             Chats = e.ClientMessages;
-            ChatMessages = new ObservableCollection<string>(Chats[GeneralChat]);
+            ChatMessages = new ObservableCollection<Message>(Chats[GeneralChat]);
         }
 
         private void HandleFilteredMessagesReceived(object sender, FilteredMessagesReceivedEventArgs e)
         {
             Chats[EventLog] = e.FilteredMessages;
-            ChatMessages = new ObservableCollection<string>(Chats[EventLog]);
+            ChatMessages = new ObservableCollection<Message>(Chats[EventLog]);
             SelectedClient = ClientsCollection.FirstOrDefault(item => item.Login == EventLog);
         }
 
@@ -411,9 +397,10 @@
                     {
                         ClientsCollection.Add(new Client(client, false)); 
                     }
+
                     if (!Chats.ContainsKey(client))
                     {
-                        Chats.Add(client, new List<string>());
+                        Chats.Add(client, new List<Message>());
                     }
                 }
             });
@@ -433,6 +420,25 @@
         private void HandleOpenChat()
         {
             ChatVisibility = Visibility.Visible;
+        }
+
+        private void SelectedClientChanged(Client client)
+        {
+            if (!Chats.ContainsKey(client.Login))
+            {
+                Chats.Add(client.Login, new List<Message>());
+            }
+
+            if (GroupsList.FirstOrDefault(item => item.Login == client.Login) != default)
+            {
+                IsGroupMessage = true;
+            }
+            else
+            {
+                IsGroupMessage = false;
+            }
+
+            ChatMessages = new ObservableCollection<Message>(Chats[client.Login]);
         }
 
         #endregion Methods

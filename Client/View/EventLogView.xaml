@@ -6,6 +6,7 @@
              xmlns:view="clr-namespace:Pet_Project.View"
              xmlns:viewModel="clr-namespace:Pet_Project.ViewModel"
              xmlns:interactivity="http://prismlibrary.com/"
+             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              interactivity:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
@@ -14,13 +15,13 @@
              Style="{StaticResource PrimaryControlStyle}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.2*"></RowDefinition>
-            <RowDefinition Height="0.2*"></RowDefinition>
-            <RowDefinition Height="0.25*"></RowDefinition>
-            <RowDefinition Height="0.2*"></RowDefinition>
-            <RowDefinition Height="0.2*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
             <RowDefinition Height="0.4*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"></ColumnDefinition>
@@ -53,7 +54,7 @@
         </StackPanel>
         <TextBox Grid.Row="4" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Message types:" Margin="0,0,0,0"></TextBox>
         <StackPanel Grid.Row="5" Grid.Column="0" Margin="5,0,0,0">
-            <CheckBox Content="Messages" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsMessages}" Margin="0,0,0,30"></CheckBox>
+            <!--<CheckBox Content="Messages" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsMessages}" Margin="0,0,0,30"></CheckBox>-->
             <CheckBox Content="Events" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsEvents}" Margin="0,0,0,30"></CheckBox>
             <CheckBox Content="Errors" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsErrors}"></CheckBox>
         </StackPanel>

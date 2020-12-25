@@ -4,7 +4,7 @@
 
     using Prism.Events;
 
-    public class OpenGroupChatEventArgs : PubSubEvent<ObservableCollection<string>>
+    public class OpenGroupChatEventArgs : PubSubEvent<ObservableCollection<Client>>
     {
     }
 }

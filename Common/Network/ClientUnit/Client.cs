@@ -1,4 +1,4 @@
-﻿namespace Pet_Project
+﻿namespace Common.Network
 {
     public class Client
     {

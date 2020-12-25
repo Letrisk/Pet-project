@@ -27,18 +27,18 @@
         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}" 
                  Text="Choose clients:" Margin="5,5,5,5"></TextBox>
         <ListBox x:Name="groupList" Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryListBoxStyle}"
-                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 ItemContainerStyle="{StaticResource ClientListBoxItemStyle}"
                  ItemsSource="{Binding Clients}" SelectedValue="{Binding CurrentTarget}" Margin="5,5,5,5">
         </ListBox>
         <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ReadOnlyTextBoxStyle}"
                  Text="Group: " Margin="5,5,5,5"></TextBox>
         <ListBox x:Name="selectedGroupList" Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryListBoxStyle}"
-                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                 ItemContainerStyle="{StaticResource ClientListBoxItemStyle}"
                  ItemsSource="{Binding GroupClients}" SelectedValue="{Binding DeleteCurrentTarget}" Margin="5,5,5,5"></ListBox>
         <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}"
                  Text="Group name:" Margin="5,5,5,5"></TextBox>
-        <TextBox Grid.Row="3" Grid.Column="0" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding GroupName}"
-                 Margin="5,5,5,5"></TextBox>
+        <TextBox Grid.Row="3" Grid.Column="0" FontSize="20" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding GroupName}"
+                 Margin="5,5,5,5" TextWrapping="Wrap"></TextBox>
         <Button Grid.Row="4" Grid.Column="0" Style="{StaticResource PrimaryButtonStyle}" IsEnabled="{Binding IsApplyEnable}" 
                 Command="{Binding GroupChatCommand}" 
                 Content="Apply" FontSize="18" Margin="5,5,5,5"></Button>

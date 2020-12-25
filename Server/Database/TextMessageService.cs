@@ -7,15 +7,15 @@
     {
         #region Fields
 
-        private DatabaseController _dbController;
+        private readonly DatabaseController _dbController;
 
         #endregion Fields
 
         #region Constructors
 
-        public TextMessageService()
+        public TextMessageService(DatabaseController databaseController)
         {
-            _dbController = new DatabaseController();
+            _dbController = databaseController;
         }
 
         #endregion Constructors
@@ -27,9 +27,10 @@
             _dbController.AddMessage(source, target, message, date);
         }
 
-        public Dictionary<string, List<string>> GetClientMessages(string client)
+        public Dictionary<string, List<Common.Network.Message>> GetClientMessages(string client)
         {
-            Dictionary<string, List<string>> clientMessages = new Dictionary<string, List<string>>() { { "General", new List<string>() } };
+            Dictionary<string, List<Common.Network.Message>> clientMessages = new Dictionary<string, List<Common.Network.Message>>() 
+                                                                              { { "General", new List<Common.Network.Message>() } };
 
             List<Message> messages = _dbController.GetMessageLog(client);
 
@@ -41,7 +42,7 @@
 
                 if (String.IsNullOrEmpty(msg.Target))
                 {
-                    clientMessages["General"].Add(message);
+                    clientMessages["General"].Add(new Common.Network.Message(msg.Source, msg.MessageText, client == msg.Source, msg.Date));
                 }
                 else
                 {
@@ -49,19 +50,19 @@
                     {
                         if (!clientMessages.ContainsKey(msg.Source))
                         {
-                            clientMessages.Add(msg.Source, new List<string>());
+                            clientMessages.Add(msg.Source, new List<Common.Network.Message>());
                         }
 
-                        clientMessages[msg.Source].Add(message);
+                        clientMessages[msg.Source].Add(new Common.Network.Message(msg.Source, msg.MessageText, false, msg.Date));
                     }
                     else
                     {
                         if (!clientMessages.ContainsKey(msg.Target))
                         {
-                            clientMessages.Add(msg.Target, new List<string>());
+                            clientMessages.Add(msg.Target, new List<Common.Network.Message>());
                         }
 
-                        clientMessages[msg.Target].Add(message);
+                        clientMessages[msg.Target].Add(new Common.Network.Message(msg.Source, msg.MessageText, true, msg.Date));
                     }
                 }
             });

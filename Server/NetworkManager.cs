@@ -4,8 +4,6 @@
     using System.Net;
     using System.Collections.Generic;
     using System.Configuration;
-    using System.Linq;
-    using System.IO;
 
     using Common.Network;
     using Common.Network.Messages;
@@ -20,6 +18,7 @@
         private readonly long _timeout;
         private readonly int _port;
         private readonly IPAddress _ip;
+        private readonly ConnectionStringSettings _connectionString;
 
         private readonly WsServer _wsServer;
 
@@ -39,7 +38,9 @@
             _ip = settingsManager.Ip;
             _port = settingsManager.Port;
             _timeout = settingsManager.Timeout;
+            _connectionString = settingsManager.ConnectionSettings;
 
+            DatabaseController databaseController = new DatabaseController(_connectionString);
 
             if (_transport == "WebSocket")
             {
@@ -54,10 +55,10 @@
                 _wsServer.Timeout = _timeout;
             }
 
-            _txtMsgService = new TextMessageService();
-            _clientEventService = new ClientEventService();
-            _clientService = new ClientService();
-            _groupService = new GroupService();
+            _txtMsgService = new TextMessageService(databaseController);
+            _clientEventService = new ClientEventService(databaseController);
+            _clientService = new ClientService(databaseController);
+            _groupService = new GroupService(databaseController);
         }
 
         #endregion Constructors

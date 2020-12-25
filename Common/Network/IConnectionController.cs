@@ -2,8 +2,6 @@
 {
     using System;
 
-    using WebSocketSharp;
-
     public interface IConnectionController
     {
         #region Events

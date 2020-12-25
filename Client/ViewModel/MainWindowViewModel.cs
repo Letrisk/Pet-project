@@ -1,20 +1,12 @@
 ﻿namespace Pet_Project.ViewModel
 {
-    using System;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Windows.Threading;
 
-    using Prism.Commands;
     using Prism.Mvvm;
     using Prism.Events;
 
     using Common.Network;
     using View;
-    using Common.Network.Messages;
 
     public class MainWindowViewModel : BindableBase
     {
@@ -27,16 +19,16 @@
         private readonly object _eventLogView;
         private readonly object _groupChatView;
 
-        private object _selectedViewModel;
+        private object _selectedView;
 
         #endregion Fields
 
         #region Properties
 
-        public object SelectedViewModel
+        public object SelectedView
         {
-            get => _selectedViewModel;
-            set => SetProperty(ref _selectedViewModel, value);
+            get => _selectedView;
+            set => SetProperty(ref _selectedView, value);
         }
 
         #endregion Properties
@@ -52,11 +44,11 @@
             _groupChatView = new GroupChatView();
             _eventLogView = new EventLogView();
 
-            _selectedViewModel = _connectionView;
+            _selectedView = _connectionView;
 
-            _eventAggregator.GetEvent<OpenChatEventArgs>().Subscribe(OpenChat);
-            _eventAggregator.GetEvent<OpenGroupChatEventArgs>().Subscribe(OpenGroupChat);
-            _eventAggregator.GetEvent<OpenEventLogEventArgs>().Subscribe(OpenEventLog);
+            _eventAggregator.GetEvent<OpenChatEventArgs>().Subscribe(OpenChatView);
+            _eventAggregator.GetEvent<OpenGroupChatEventArgs>().Subscribe(OpenGroupChatView);
+            _eventAggregator.GetEvent<OpenEventLogEventArgs>().Subscribe(OpenEventLogView);
             _eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(OpenConnectionView);
         }
 
@@ -66,22 +58,22 @@
 
         private void OpenConnectionView()
         {
-            SelectedViewModel = _connectionView;
+            SelectedView = _connectionView;
         }
 
-        private void OpenChat()
+        private void OpenChatView()
         {
-            SelectedViewModel = _chatView;           
+            SelectedView = _chatView;           
         }
 
-        private void OpenGroupChat(ObservableCollection<string> clients)
+        private void OpenGroupChatView(ObservableCollection<Client> clients)
         {
-            SelectedViewModel = _groupChatView;
+            SelectedView = _groupChatView;
         }
 
-        private void OpenEventLog()
+        private void OpenEventLogView()
         {
-            SelectedViewModel = _eventLogView;
+            SelectedView = _eventLogView;
         }
 
         #endregion Methods

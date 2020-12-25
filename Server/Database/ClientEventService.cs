@@ -9,15 +9,15 @@
     {
         #region Fields
 
-        private DatabaseController _dbController;
+        private readonly DatabaseController _dbController;
 
         #endregion Fields
 
         #region Constructors
 
-        public ClientEventService()
+        public ClientEventService(DatabaseController databaseController)
         {
-            _dbController = new DatabaseController();
+            _dbController = databaseController;
         }
 
         #endregion Constructors
@@ -29,15 +29,16 @@
             _dbController.AddClientEvent(messageType, message, date);
         }
 
-        public List<string> GetClientEvents(DateTime firstDate, DateTime secondDate, MessageType messageTypes)
+        public List<Common.Network.Message> GetClientEvents(DateTime firstDate, DateTime secondDate, MessageType messageTypes)
         {
-            List<string> clientEvents = new List<string>();
+            List<Common.Network.Message> clientEvents = new List<Common.Network.Message>();
 
             List<ClientEvent> clientEventsList = _dbController.GetClientEventLog(firstDate, secondDate, messageTypes);
 
             foreach (ClientEvent clientEvent in clientEventsList)
             {
-                clientEvents.Add($"{clientEvent.Date} {clientEvent.MessageType} : {clientEvent.Message}\n");
+                string message = $"{clientEvent.MessageType} : {clientEvent.Message}";
+                clientEvents.Add(new Common.Network.Message("Event log", message, false, clientEvent.Date));
             }
 
             return clientEvents;

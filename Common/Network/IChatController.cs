@@ -34,7 +34,7 @@
 
         void Send(string target, string message, string groupName);
 
-        void LeaveGroup(string source, string groupName);
+        void LeaveGroup(string groupName);
 
         #endregion Methods
     }

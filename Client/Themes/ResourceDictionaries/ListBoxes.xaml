@@ -12,17 +12,6 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="OfflineListBoxStyle" TargetType="{x:Type ListBox}">
-        <Setter Property="Background" Value="#FFF1F1F1"/>
-        <Setter Property="Foreground" Value="#FF595959"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
-                <Setter Property="Background" Value="#FF1E1E1E"/>
-                <Setter Property="Foreground" Value="#FF979797"/>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
     <Style x:Key="ClientListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Template">
@@ -107,69 +96,46 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <Border x:Name="border">
-                        <ContentPresenter x:Name="contentPresenter" Content="{TemplateBinding Content}"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsFocused" Value="False"/>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="OldGroupListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-
-                    <Border x:Name="border">
+                    <Border x:Name="border" HorizontalAlignment="Left">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="0.5*"/>
-                            </Grid.ColumnDefinitions>
-                            <ContentPresenter x:Name="contentPresenter" Content="{TemplateBinding Content}"/>
-                            <Button x:Name="leaveButton" Grid.Column="1"
-                                    Style="{StaticResource PrimaryButtonStyle}" FontSize="12" Content="Leave" Visibility="Collapsed" 
-                                    Command="{Binding Path=DataContext.LeaveGroupCommand, 
-                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
-                            </Button>
+                            <TextBlock Grid.Row="0" FontSize="14" Text="{Binding Source}"/>
+                            <ScrollViewer  Grid.Row="1"  MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                <Border x:Name="textBorder" Background="LightGray" CornerRadius="10">
+                                    <TextBlock Text="{Binding Text}" MaxWidth="250" TextWrapping="Wrap" Margin="5,0,5,0"/>
+                                </Border>
+                            </ScrollViewer>
+                            <TextBlock Grid.Row="2" FontSize="10" Foreground="Gray" Text="{Binding DateTime}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsFocused" Value="False"/>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
-                            <Setter Property="Visibility" Value="Visible" TargetName="leaveButton"/>
-                        </Trigger>
+                        <DataTrigger Binding="{Binding Path=DataContext.IsDarkTheme, 
+                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" Value="True">
+                            <Setter Property="Background" Value="Gray" TargetName="textBorder"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsYourMessage}" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="textBorder"/>
+                            <Setter Property="HorizontalAlignment" Value="Right" TargetName="border"/>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

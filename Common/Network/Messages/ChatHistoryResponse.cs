@@ -6,13 +6,13 @@
     {
         #region Properties
 
-        public Dictionary<string, List<string>> ClientMessages { get; set; }
+        public Dictionary<string, List<Message>> ClientMessages { get; set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ChatHistoryResponse(Dictionary<string, List<string>> clientMessages)
+        public ChatHistoryResponse(Dictionary<string, List<Message>> clientMessages)
         {
             ClientMessages = clientMessages;
         }

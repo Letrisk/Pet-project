@@ -41,6 +41,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\ClientUnit\Client.cs" />
+    <Compile Include="Network\ClientUnit\Message.cs" />
     <Compile Include="Network\Controller.cs" />
     <Compile Include="Network\ChatController.cs" />
     <Compile Include="Network\ConnectionController.cs" />

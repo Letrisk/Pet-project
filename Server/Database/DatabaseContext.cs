@@ -18,8 +18,9 @@
 
         #region Constructors
 
-        public DatabaseContext() : base("DBConnection")
+        public DatabaseContext(string connectionString) : base("DBConnection")
         {
+            Database.Connection.ConnectionString = connectionString;
         }
 
         #endregion Constructors

@@ -6,13 +6,13 @@
     {
         #region Properties
 
-        public List<string> FilteredMessages { get; }
+        public List<Message> FilteredMessages { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public FilteredMessagesReceivedEventArgs(List<string> filteredMessages)
+        public FilteredMessagesReceivedEventArgs(List<Message> filteredMessages)
         {
             FilteredMessages = filteredMessages;
         }

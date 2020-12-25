@@ -2,32 +2,34 @@
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Windows.Threading;
 
     using Prism.Commands;
     using Prism.Mvvm;
     using Prism.Events;
 
     using Common.Network;
-    using View;
-    using Common.Network.Messages;
 
     public class GroupChatViewModel : BindableBase
     {
+        #region Constants
+
+        const string GROUP_FORMAT = @"^\w{1,20}$";
+
+        #endregion Constants
+
         #region Fields
 
         private readonly IEventAggregator _eventAggregator;
         private readonly IGroupChatController _groupChatController;
 
-        private ObservableCollection<string> _clients;
-        private ObservableCollection<string> _groupClients;
+        private ObservableCollection<Client> _clients;
+        private ObservableCollection<Client> _groupClients;
 
-        private string _currentTarget;
-        private string _deleteCurrentTarget;
+        private Client _currentTarget;
+        private Client _deleteCurrentTarget;
         private string _groupName;
 
         private bool _isApplyEnable;
@@ -39,13 +41,13 @@
 
         #region Properties
 
-        public ObservableCollection<string> Clients
+        public ObservableCollection<Client> Clients
         {
             get => _clients;
             set => SetProperty(ref _clients, value);
         }
 
-        public ObservableCollection<string> GroupClients
+        public ObservableCollection<Client> GroupClients
         {
             get => _groupClients;
             set
@@ -55,7 +57,7 @@
             }
         }
 
-        public string CurrentTarget
+        public Client CurrentTarget
         {
             get => _currentTarget;
             set
@@ -73,7 +75,7 @@
             }
         }
 
-        public string DeleteCurrentTarget
+        public Client DeleteCurrentTarget
         {
             get => _deleteCurrentTarget;
             set 
@@ -132,8 +134,8 @@
 
             _groupChatController = groupChatController;
 
-            _clients = new ObservableCollection<string>();
-            _groupClients = new ObservableCollection<string>();
+            _clients = new ObservableCollection<Client>();
+            _groupClients = new ObservableCollection<Client>();
             _isApplyEnable = false;
             _groupChatVisibility = Visibility.Collapsed;
 
@@ -148,9 +150,16 @@
 
         private void ExecuteGroupChatCommand()
         {
-            _groupChatController.CreateGroupRequest(_groupName, _groupClients.ToList());
-            _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-            GroupChatVisibility = Visibility.Collapsed;
+            if (Regex.IsMatch(GroupName, GROUP_FORMAT))
+            {
+                _groupChatController.CreateGroupRequest(_groupName, _groupClients.Select(item => item.Login).ToList());
+                _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
+                GroupChatVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MessageBox.Show("Incorrect group name!");
+            }
         }
 
         private void ExecuteCancelCommand()
@@ -159,7 +168,7 @@
             GroupChatVisibility = Visibility.Collapsed;
         }
 
-        private void HandleOpenGroupChat(ObservableCollection<string> clients)
+        private void HandleOpenGroupChat(ObservableCollection<Client> clients)
         {
             Clients = clients;
             GroupChatVisibility = Visibility.Visible;

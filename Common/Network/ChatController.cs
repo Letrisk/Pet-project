@@ -1,17 +1,8 @@
 ﻿namespace Common.Network
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Threading;
-
-    using WebSocketSharp;
 
     using Messages;
-    using Network;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     public class ChatController : IChatController
     {
@@ -73,7 +64,7 @@
             _controller.Send(new MessageRequest(target, message, groupName).GetContainer());
         }
 
-        public void LeaveGroup(string source, string groupName)
+        public void LeaveGroup(string groupName)
         {
             _controller.Send(new LeaveGroupRequest(groupName).GetContainer());
         }
@@ -88,7 +79,10 @@
 
         public void HandleConnectionReceived(object sender, ConnectionReceivedEventArgs e)
         {
-            ConnectionReceived?.Invoke(this, e);
+            if (!String.IsNullOrEmpty(e.Login))
+            {
+                ConnectionReceived?.Invoke(this, e);
+            }
         }
 
         public void HandleMessageReceived(object sender, MessageReceivedEventArgs e)

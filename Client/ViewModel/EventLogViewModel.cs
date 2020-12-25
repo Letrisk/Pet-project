@@ -2,22 +2,22 @@
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Windows.Threading;
+    using System.Text.RegularExpressions;
 
     using Prism.Commands;
     using Prism.Mvvm;
     using Prism.Events;
 
     using Common.Network;
-    using View;
-    using Common.Network.Messages;
 
     public class EventLogViewModel : BindableBase
     {
+        #region Constants
+
+        private const string TIME_FORMAT = @"^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$";
+
+        #endregion Constants
+
         #region Fields
 
         private readonly IEventLogController _eventLogController;
@@ -45,15 +45,13 @@
 
         public DateTime FirstDate
         {
-            get => new DateTime(_firstDate.Year, _firstDate.Month, _firstDate.Day,
-                                _firstDateHours, _firstDateMinutes, _firstDateSeconds);
-            set =>SetProperty(ref _firstDate, value);
+            get => _firstDate;
+            set => SetProperty(ref _firstDate, value);
         }
 
         public DateTime SecondDate
         {
-            get => new DateTime(_secondDate.Year, _secondDate.Month, _secondDate.Day,
-                                _secondDateHours, _secondDateMinutes, _secondDateSeconds);
+            get => _secondDate;
             set => SetProperty(ref _secondDate, value);
         }
 
@@ -152,13 +150,32 @@
 
         private void ExecuteFilterCommand()
         {
-            var selectedTypes = IsMessages ? MessageType.Message : 0;
-            selectedTypes |= IsEvents ? MessageType.Event : 0;
-            selectedTypes |= IsErrors ? MessageType.Error : 0;
+            string firstTime = $"{FirstDateHours}:{FirstDateMinutes}:{FirstDateSeconds}";
+            string secondTime = $"{SecondDateHours}:{SecondDateMinutes}:{SecondDateSeconds}";
 
-            _eventLogController.SendFilterRequest(FirstDate, SecondDate, selectedTypes);
-            _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-            EventLogVisibility = Visibility.Collapsed;
+            if (Regex.IsMatch(firstTime, TIME_FORMAT) && Regex.IsMatch(secondTime, TIME_FORMAT))
+            {
+                FirstDate = new DateTime(FirstDate.Year, FirstDate.Month, FirstDate.Day, FirstDateHours, FirstDateMinutes, FirstDateSeconds);
+                SecondDate = new DateTime(SecondDate.Year, SecondDate.Month, SecondDate.Day, SecondDateHours, SecondDateMinutes, SecondDateSeconds);
+
+                if (FirstDate <= SecondDate)
+                {
+                    var selectedTypes = IsEvents ? MessageType.Event : 0;
+                    selectedTypes |= IsErrors ? MessageType.Error : 0;
+
+                    _eventLogController.SendFilterRequest(FirstDate, SecondDate, selectedTypes);
+                    _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
+                    EventLogVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect date range!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Incorrect time!");
+            }
         }
 
         private void ExecuteCancelCommand()

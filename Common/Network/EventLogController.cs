@@ -1,17 +1,8 @@
 ﻿namespace Common.Network
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Collections.ObjectModel;
-    using System.Threading;
-
-    using WebSocketSharp;
 
     using Messages;
-    using Network;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     public class EventLogController : IEventLogController
     {

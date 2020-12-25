@@ -6,13 +6,13 @@
     {
         #region Properties
 
-        public Dictionary<string, List<string>> ClientMessages { get; }
+        public Dictionary<string, List<Message>> ClientMessages { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ChatHistoryReceivedEventArgs(Dictionary<string, List<string>> clientMessages)
+        public ChatHistoryReceivedEventArgs(Dictionary<string, List<Message>> clientMessages)
         {
             ClientMessages = clientMessages;
         }

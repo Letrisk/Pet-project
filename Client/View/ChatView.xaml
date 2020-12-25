@@ -55,11 +55,6 @@
         </ListBox>
         <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ReadOnlyTextBoxStyle}" 
                Text="Offline Clients:" Margin="5,120,10,131"></TextBox>
-        <ListBox x:Name="offlineClients" Grid.Row="3" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource OfflineListBoxStyle}"
-                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"
-                 ItemsSource="{Binding OfflineClients}" 
-                 SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True" 
-                 Margin="5,155,10,5"></ListBox>
         <ListBox x:Name="messagesList" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
                  ItemContainerStyle="{StaticResource ListBoxItemStyle}"
                  ItemsSource="{Binding ChatMessages}" Margin="5,5,5,5"></ListBox>

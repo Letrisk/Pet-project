@@ -7,15 +7,15 @@
     {
         #region Fields
 
-        private DatabaseController _dbController;
+        private readonly DatabaseController _dbController;
 
         #endregion Fields
 
         #region Constructors
 
-        public ClientService()
+        public ClientService(DatabaseController databaseController)
         {
-            _dbController = new DatabaseController();
+            _dbController = databaseController;
         }
 
         #endregion Constructors

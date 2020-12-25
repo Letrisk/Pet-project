@@ -2,25 +2,21 @@
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Windows.Threading;
+    using System.Text.RegularExpressions;
 
     using Prism.Commands;
     using Prism.Mvvm;
     using Prism.Events;
 
     using Common.Network;
-    using View;
-    using Common.Network.Messages;
 
     public class ConnectionViewModel : BindableBase
     {
         #region Constants
 
-        const TransportType CurrentTransport = TransportType.WebSocket;
+        const string ADDRESS_FORMAT = @"\b\d{1,3}.\b\d{1,3}.\b\d{1,3}.\b\d{1,3}\b";
+        const string PORT_FORMAT = @"\d{1,5}";
+        const string LOGIN_FORMAT = @"^\w{1,20}$";
 
         #endregion Constants
 
@@ -36,7 +32,7 @@
         private string _login;
         private string _guideText;
 
-        private bool _isAuthorized;
+        private bool _isConnected;
         private bool _isDarkTheme;
 
         #endregion Fields
@@ -52,7 +48,10 @@
         public string Address
         {
             get => _address;
-            set => SetProperty(ref _address, value);
+            set
+            {
+                SetProperty(ref _address, value);
+            }
         }
 
         public string Port
@@ -73,10 +72,10 @@
             set => SetProperty(ref _guideText, value);
         }
 
-        public bool IsAuthorized
+        public bool IsConnected
         {
-            get => _isAuthorized;
-            set => SetProperty(ref _isAuthorized, value);
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
         }
 
         public bool IsDarkTheme
@@ -88,6 +87,7 @@
         public DelegateCommand StartCommand { get; }
 
         public DelegateCommand LoginCommand { get; }
+
 
         #endregion Properties
 
@@ -101,8 +101,8 @@
             _connectionVisibility = Visibility.Visible;
             _address = "192.168.37.147";
             _port = "65000";
-            _guideText = "Введите адрес и порт";
-            _isAuthorized = false;
+            _guideText = "Enter address and port";
+            _isConnected = false;
 
             eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
             eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleDisconnection);
@@ -120,21 +120,35 @@
 
         private void ExecuteStartCommand()
         {
-            try
+            if (Regex.IsMatch(_address, ADDRESS_FORMAT) && Regex.IsMatch(_port, PORT_FORMAT))
             {
-                _connectionController.Connect(Address, Port);
-            }
+                try
+                {
+                    _connectionController.Connect(Address, Port);
+                }
 
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"{ex.Message}");
+                } 
+            }
+            else
             {
-                MessageBox.Show($"{ex.Message}");
+                GuideText = "Incorrect IP or/and port!";
             }
         }
 
         private void ExecuteLoginCommand()
         {
-            _connectionController.Login(Login);
-            ConnectionVisibility = Visibility.Collapsed;
+            if (Regex.IsMatch(Login, LOGIN_FORMAT))
+            {
+                _connectionController.Login(Login);
+                ConnectionVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GuideText = "Incorrect login!";
+            }
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -143,12 +157,12 @@
             {
                 if (string.IsNullOrEmpty(e.Client))
                 {
-                    GuideText = $"Авторизуйтесь, чтобы отправлять сообщения.\n";
-                    IsAuthorized = true;
+                    GuideText = $"Authorize for messaging.\n";
+                    IsConnected = true;
                 }
                 else
                 {
-                    GuideText = $"Авторизация выполнена успешно.\n";
+                    GuideText = $"Authorization complete.\n";
                     _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
                 }
             }
@@ -156,7 +170,7 @@
 
         private void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
         {
-            MessageBox.Show(e.Reason);
+            GuideText = e.Reason;
         }
 
         private void HandleChangeStyle(bool isDarkTheme)
@@ -167,7 +181,7 @@
         private void HandleDisconnection()
         {
             Login = String.Empty;
-            IsAuthorized = false;
+            IsConnected = false;
 
             ConnectionVisibility = Visibility.Visible;
         }
