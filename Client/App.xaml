@@ -4,6 +4,16 @@
              xmlns:local="clr-namespace:Pet_Project"
              xmlns:unity ="http://prismlibrary.com/">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/Buttons.xaml" />
+                <ResourceDictionary Source="Themes/ResourceDictionaries/TextBoxes.xaml" />
+                <ResourceDictionary Source="Themes/ResourceDictionaries/Labels.xaml" />
+                <ResourceDictionary Source="Themes/ResourceDictionaries/ListBoxes.xaml"/>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/CheckBoxes.xaml"/>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/ScrollBars.xaml"/>
+                <ResourceDictionary Source="Themes/ResourceDictionaries/UserControls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </unity:PrismApplication>

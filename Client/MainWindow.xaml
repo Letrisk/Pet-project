@@ -9,8 +9,8 @@
         xmlns:interactivity="http://prismlibrary.com/"
         interactivity:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance viewModel:NavigationViewModel}"
-        Title="MainWindow" Height="Auto" Width="Auto" SizeToContent="WidthAndHeight">
+        d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
+        Title="MainWindow" Height="Auto" Width="Auto" ResizeMode="CanResizeWithGrip" SizeToContent="WidthAndHeight">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModel:ConnectionViewModel}">
             <view:ConnectionView></view:ConnectionView>
@@ -18,17 +18,27 @@
         <DataTemplate DataType="{x:Type viewModel:ChatViewModel}">
             <view:ChatView></view:ChatView>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:EventLogViewModel}">
+            <view:EventLogView></view:EventLogView>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:GroupChatViewModel}">
+            <view:GroupChatView></view:GroupChatView>
+        </DataTemplate>
     </Window.Resources>
-    <Grid>
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="0.3*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <ContentControl x:Name="Pages" Content="{Binding SelectedViewModel}" Grid.ColumnSpan="2"></ContentControl>
-        <Button Grid.Row="1" Content="Enter" Command="{Binding EnterChatCommand}"></Button>
-    </Grid>
+        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding SelectedView}"/>
+        <view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
+        <view:ChatView Grid.Row="1" Visibility="{Binding ChatVisibility}"></view:ChatView>
+        <view:EventLogView Grid.Row="0" Grid.Column="1" Visibility="{Binding EventLogVisibility}"></view:EventLogView>
+        <view:GroupChatView Grid.Row="1" Grid.Column="1" Visibility="{Binding GroupChatVisibility}"></view:GroupChatView>
+    </Grid>-->
+    <ContentControl Content="{Binding SelectedView}"/>
 </Window>

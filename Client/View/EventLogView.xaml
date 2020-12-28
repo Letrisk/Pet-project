@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="Pet_Project.View.EventLogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:view="clr-namespace:Pet_Project.View"
+             xmlns:viewModel="clr-namespace:Pet_Project.ViewModel"
+             xmlns:interactivity="http://prismlibrary.com/"
+             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             interactivity:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModel:EventLogViewModel}"
+             Height="350" Width="300"
+             Style="{StaticResource PrimaryControlStyle}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.4*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Date:" Margin="5,0,0,0"></TextBox>
+        <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}" FontSize="15" Text="From:" Margin="5,0,0,0"></TextBox>
+        <DatePicker Grid.Row="2" Grid.Column="0" SelectedDate="{Binding FirstDate, Mode=TwoWay, TargetNullValue={x:Static System:DateTime.Now}}" Margin="5,0,0,10"></DatePicker>
+        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ReadOnlyTextBoxStyle}" FontSize="15" Text="To:" Margin="0,0,5,0"></TextBox>
+        <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding SecondDate}" Margin="0,0,5,10"></DatePicker>
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="5,0,0,0">
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding FirstDateHours}"
+                     Margin="0,0,0,4"/>
+            <Label Content=":" FontSize="20" Padding="5,0,5,0"/>
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding FirstDateMinutes}" 
+                     Margin="0,0,0,4"/>
+            <Label Content=":" FontSize="20" Padding="5,0,5,0"/>
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding FirstDateSeconds}" 
+                     Margin="0,0,0,4"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5,0,0,0">
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding SecondDateHours}" 
+                     Margin="0,0,0,4"/>
+            <Label Content=":" FontSize="20" Padding="5,0,5,0"/>
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding SecondDateMinutes}" 
+                     Margin="0,0,0,4"/>
+            <Label Content=":" FontSize="20" Padding="5,0,5,0"/>
+            <TextBox FontSize="16" Width="25" Style="{StaticResource PrimaryTextBoxStyle}" Text="{Binding SecondDateSeconds}" 
+                     Margin="0,0,0,4"/>
+        </StackPanel>
+        <TextBox Grid.Row="4" Grid.Column="0" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Message types:" Margin="0,0,0,0"></TextBox>
+        <StackPanel Grid.Row="5" Grid.Column="0" Margin="5,0,0,0">
+            <!--<CheckBox Content="Messages" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsMessages}" Margin="0,0,0,30"></CheckBox>-->
+            <CheckBox Content="Events" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsEvents}" Margin="0,0,0,30"></CheckBox>
+            <CheckBox Content="Errors" Style="{StaticResource PrimaryCheckBoxStyle}" IsChecked="{Binding IsErrors}"></CheckBox>
+        </StackPanel>
+        <Button Grid.Row="6" Grid.Column="0" FontSize="18" Content="Apply" Style="{StaticResource PrimaryButtonStyle}" 
+                Command="{Binding FilterCommand}" Margin="5,15,0,15"></Button>
+        <Button Grid.Row="6" Grid.Column="1" FontSize="18" Content="Cancel" Style="{StaticResource PrimaryButtonStyle}" 
+                Command="{Binding CancelCommand}" Margin="5,15,5,15"></Button>
+    </Grid>
+</UserControl>

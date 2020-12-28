@@ -2,57 +2,68 @@
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Windows.Threading;
+    using System.Text.RegularExpressions;
 
     using Prism.Commands;
     using Prism.Mvvm;
+    using Prism.Events;
 
     using Common.Network;
-    using Common.Network._Enums_;
-    using Common.Network._EventArgs_;
-    using View;
-    using Common.Network.Messages;
 
     public class ConnectionViewModel : BindableBase
     {
         #region Constants
 
-        const TransportType CurrentTransport = TransportType.WebSocket;
+        const string ADDRESS_FORMAT = @"\b\d{1,3}.\b\d{1,3}.\b\d{1,3}.\b\d{1,3}\b";
+        const string PORT_FORMAT = @"\d{1,5}";
+        const string LOGIN_FORMAT = @"^\w{1,20}$";
 
         #endregion Constants
 
         #region Fields
 
-        private IController _currentController;
+        private readonly IConnectionController _connectionController;
+        private readonly IEventAggregator _eventAggregator;
 
-        private string _currentAddress = "192.168.37.147", _currentPort = "65000", _currentLogin, _guideText = "Введите адрес и порт";
+        private Visibility _connectionVisibility;
 
-        private bool _isLoginEnable = false;
+        private string _address;
+        private string _port;
+        private string _login;
+        private string _guideText;
+
+        private bool _isConnected;
+        private bool _isDarkTheme;
 
         #endregion Fields
 
         #region Properties
 
-        public string CurrentAddress
+        public Visibility ConnectionVisibility
         {
-            get => _currentAddress;
-            set => SetProperty(ref _currentAddress, value);
+            get => _connectionVisibility;
+            set => SetProperty(ref _connectionVisibility, value);
         }
 
-        public string CurrentPort
+        public string Address
         {
-            get => _currentPort;
-            set => SetProperty(ref _currentPort, value);
+            get => _address;
+            set
+            {
+                SetProperty(ref _address, value);
+            }
         }
 
-        public string CurrentLogin
+        public string Port
         {
-            get => _currentLogin;
-            set => SetProperty(ref _currentLogin, value);
+            get => _port;
+            set => SetProperty(ref _port, value);
+        }
+
+        public string Login
+        {
+            get => _login;
+            set => SetProperty(ref _login, value);
         }
 
         public string GuideText
@@ -61,24 +72,46 @@
             set => SetProperty(ref _guideText, value);
         }
 
-        public bool IsLoginEnable
+        public bool IsConnected
         {
-            get => _isLoginEnable;
-            set => SetProperty(ref _isLoginEnable, value);
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
+        }
+
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set => SetProperty(ref _isDarkTheme, value);
         }
 
         public DelegateCommand StartCommand { get; }
 
         public DelegateCommand LoginCommand { get; }
 
+
         #endregion Properties
 
         #region Constructors
 
-        public ConnectionViewModel()
+        public ConnectionViewModel(IEventAggregator eventAggregator, IConnectionController connectionController)
         {
+            _eventAggregator = eventAggregator;
+            _connectionController = connectionController;
+
+            _connectionVisibility = Visibility.Visible;
+            _address = "192.168.37.147";
+            _port = "65000";
+            _guideText = "Enter address and port";
+            _isConnected = false;
+
+            eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
+            eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleDisconnection);
+
             StartCommand = new DelegateCommand(ExecuteStartCommand);
             LoginCommand = new DelegateCommand(ExecuteLoginCommand);
+
+            _connectionController.ConnectionStateChanged += HandleConnectionStateChanged;
+            _connectionController.ErrorReceived += HandleErrorReceived;
         }
 
         #endregion Constructors
@@ -87,23 +120,35 @@
 
         private void ExecuteStartCommand()
         {
-            try
+            if (Regex.IsMatch(_address, ADDRESS_FORMAT) && Regex.IsMatch(_port, PORT_FORMAT))
             {
-                _currentController = ControllerFactory.Create(CurrentTransport);
-                _currentController.ConnectionStateChanged += HandleConnectionStateChanged;
-                _currentController.Connect(CurrentAddress, CurrentPort);
-            }
+                try
+                {
+                    _connectionController.Connect(Address, Port);
+                }
 
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"{ex.Message}");
+                } 
+            }
+            else
             {
-                MessageBox.Show($"{ex.Message}");
+                GuideText = "Incorrect IP or/and port!";
             }
         }
 
         private void ExecuteLoginCommand()
         {
-            _currentController?.Login(CurrentLogin);
-            NavigationViewModel navMod = new NavigationViewModel { SelectedViewModel = new ChatViewModel()};
+            if (Regex.IsMatch(Login, LOGIN_FORMAT))
+            {
+                _connectionController.Login(Login);
+                ConnectionVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GuideText = "Incorrect login!";
+            }
         }
 
         private void HandleConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -112,28 +157,33 @@
             {
                 if (string.IsNullOrEmpty(e.Client))
                 {
-                    //GuideText += $"{e.Date} Клиент подключен к серверу\n";
-                    GuideText = $"Авторизуйтесь, чтобы отправлять сообщения.\n";
-                    IsLoginEnable = true;
+                    GuideText = $"Authorize for messaging.\n";
+                    IsConnected = true;
                 }
                 else
                 {
-                    GuideText = $"Авторизация выполнена успешно.\n";
-
-                    /*App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        foreach (object client in e.OnlineClients)
-                        {
-                            ClientsList.Add((string)client);
-                        }
-
-                    });*/
+                    GuideText = $"Authorization complete.\n";
+                    _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
                 }
             }
-            else
-            {
-                GuideText = $"Клиент отключен от сервера.\n";
-            }
+        }
+
+        private void HandleErrorReceived(object sender, ErrorReceivedEventArgs e)
+        {
+            GuideText = e.Reason;
+        }
+
+        private void HandleChangeStyle(bool isDarkTheme)
+        {
+            IsDarkTheme = isDarkTheme;
+        }
+
+        private void HandleDisconnection()
+        {
+            Login = String.Empty;
+            IsConnected = false;
+
+            ConnectionVisibility = Visibility.Visible;
         }
 
         #endregion Methods

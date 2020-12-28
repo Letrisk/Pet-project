@@ -1,6 +1,7 @@
-﻿namespace Common.Network._EventArgs_
+﻿namespace Common.Network
 {
     using System;
+
     public class ConnectionStateChangedEventArgs
     {
         #region Properties

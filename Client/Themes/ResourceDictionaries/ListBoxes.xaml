@@ -1,0 +1,141 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Pet_Project.Themes.ResourceDictionaries">
+
+    <Style x:Key="PrimaryListBoxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="#FFF1F1F1"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                <Setter Property="Background" Value="#FF1E1E1E"/>
+                <Setter Property="Foreground" Value="White"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ClientListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="border">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Login}"/>
+                            <Image x:Name="image" Grid.Column="1" Width="10" Height="10" Source="Images/offlineIcon.png"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                            <Setter Property="Source" TargetName="image" Value="Images/onlineIcon.png"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GroupListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="border">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Login}"/>
+                            <Button x:Name="leaveButton" Grid.Column="1"
+                                    Style="{StaticResource PrimaryButtonStyle}" FontSize="12" Content="Leave" Visibility="Collapsed" 
+                                    Command="{Binding Path=DataContext.LeaveGroupCommand, 
+                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                            </Button>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="#FFCBCBCB" TargetName="border"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="border"/>
+                            <Setter Property="Visibility" Value="Visible" TargetName="leaveButton"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="border" HorizontalAlignment="Left">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" FontSize="14" Text="{Binding Source}"/>
+                            <ScrollViewer  Grid.Row="1"  MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                <Border x:Name="textBorder" Background="LightGray" CornerRadius="10">
+                                    <TextBlock Text="{Binding Text}" MaxWidth="250" TextWrapping="Wrap" Margin="5,0,5,0"/>
+                                </Border>
+                            </ScrollViewer>
+                            <TextBlock Grid.Row="2" FontSize="10" Foreground="Gray" Text="{Binding DateTime}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=DataContext.IsDarkTheme, 
+                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" Value="True">
+                            <Setter Property="Background" Value="Gray" TargetName="textBorder"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsYourMessage}" Value="True">
+                            <Setter Property="Background" Value="#FFB879D3" TargetName="textBorder"/>
+                            <Setter Property="HorizontalAlignment" Value="Right" TargetName="border"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

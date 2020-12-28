@@ -14,16 +14,19 @@
 
         public DateTime Date { get; set; }
 
+        public string GroupName { get; set; }
+
         #endregion Properties
 
         #region Constructors
 
-        public MessageBroadcast(string source, string target, string message, DateTime date)
+        public MessageBroadcast(string source, string target, string message, DateTime date, string groupName)
         {
             Message = message;
             Source = source;
             Target = target;
             Date = date;
+            GroupName = groupName;
         }
 
         #endregion Constructors

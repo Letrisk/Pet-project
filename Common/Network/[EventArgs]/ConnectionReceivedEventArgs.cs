@@ -1,6 +1,7 @@
-﻿namespace Common.Network._EventArgs_
+﻿namespace Common.Network
 {
     using System;
+    using System.Collections.ObjectModel;
 
     public class ConnectionReceivedEventArgs
     {

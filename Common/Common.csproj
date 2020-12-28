@@ -41,27 +41,60 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Network\ControllerFactory.cs" />
+    <Compile Include="Network\ClientUnit\Client.cs" />
+    <Compile Include="Network\ClientUnit\Message.cs" />
+    <Compile Include="Network\Controller.cs" />
+    <Compile Include="Network\ChatController.cs" />
+    <Compile Include="Network\ConnectionController.cs" />
+    <Compile Include="Network\EventLogController.cs" />
+    <Compile Include="Network\GroupChatController.cs" />
+    <Compile Include="Network\IChatController.cs" />
+    <Compile Include="Network\IConnectionController.cs" />
     <Compile Include="Network\IController.cs" />
+    <Compile Include="Network\IEventLogController.cs" />
+    <Compile Include="Network\IGroupChatController.cs" />
+    <Compile Include="Network\Messages\ChatHistoryResponse.cs" />
+    <Compile Include="Network\Messages\ClientsListResponse.cs" />
     <Compile Include="Network\Messages\ConnectionBroadcast.cs" />
     <Compile Include="Network\Messages\ConnectionRequest.cs" />
     <Compile Include="Network\Messages\ConnectionResponse.cs" />
+    <Compile Include="Network\Messages\CreateGroupRequest.cs" />
+    <Compile Include="Network\Messages\FilterRequest.cs" />
+    <Compile Include="Network\Messages\FilterResponse.cs" />
+    <Compile Include="Network\Messages\GroupBroadcast.cs" />
+    <Compile Include="Network\Messages\GroupsListResponse.cs" />
+    <Compile Include="Network\Messages\LeaveGroupRequest.cs" />
     <Compile Include="Network\Messages\MessageBroadcast.cs" />
     <Compile Include="Network\Messages\MessageContainer.cs" />
     <Compile Include="Network\Messages\MessageRequest.cs" />
     <Compile Include="Network\WsConnection.cs" />
-    <Compile Include="Network\WsController.cs" />
     <Compile Include="Network\WsServer.cs" />
     <Compile Include="Network\[Enums]\MessageType.cs" />
     <Compile Include="Network\[Enums]\ResultCodes.cs" />
     <Compile Include="Network\[Enums]\TransportType.cs" />
+    <Compile Include="Network\[EventArgs]\ChangeStyleEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\ChatHistoryReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\ClientsListReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\CloseWindowsEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ConnectionReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\ConnectionStateChangedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\CreateGroupReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\ErrorReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\FilteredMessagesReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\FilterReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\GroupsReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\LeaveGroupReceivedEventArgs.cs" />
     <Compile Include="Network\[EventArgs]\MessageReceivedEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\OpenChatEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\OpenEventLogEventArgs.cs" />
+    <Compile Include="Network\[EventArgs]\OpenGroupChatEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Prism, Version=8.0.0.1909, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.Core.8.0.0.1909\lib\net47\Prism.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="websocket-sharp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">

@@ -7,5 +7,6 @@ Server/bin/
 Server/obj/
 Common/bin/
 Common/obj/
+packages/
 *.exe
 *.cache

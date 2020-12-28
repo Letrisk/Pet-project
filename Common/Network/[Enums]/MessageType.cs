@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Network._Enums_
+﻿namespace Common.Network
 {
+    using System;
+
+    [Flags]
     public enum MessageType
     {
-        Message,
-        Event,
-        Error
+        Event = 1,
+        Error = 2
     }
 }
