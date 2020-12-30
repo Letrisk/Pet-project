@@ -57,12 +57,25 @@
                     }
                     else
                     {
-                        if (!clientMessages.ContainsKey(msg.Target))
+                        if(msg.Source == client)
                         {
-                            clientMessages.Add(msg.Target, new List<Common.Network.Message>());
-                        }
+                            if (!clientMessages.ContainsKey(msg.Target))
+                            {
+                                clientMessages.Add(msg.Target, new List<Common.Network.Message>());
+                            }
 
-                        clientMessages[msg.Target].Add(new Common.Network.Message(msg.Source, msg.MessageText, true, msg.Date));
+                            clientMessages[msg.Target].Add(new Common.Network.Message(msg.Source, msg.MessageText, true, msg.Date));
+                        }
+                        else
+                        {
+                            if (!clientMessages.ContainsKey(msg.Target))
+                            {
+                                clientMessages.Add(msg.Target, new List<Common.Network.Message>());
+                            }
+
+                            clientMessages[msg.Target].Add(new Common.Network.Message(msg.Source, msg.MessageText, false, msg.Date));
+                        }
+                        
                     }
                 }
             });

@@ -16,7 +16,7 @@
     {
         #region Constants
 
-        const string GROUP_FORMAT = @"^\w{1,20}$";
+        const string GROUP_FORMAT = @"^(\w|\s){1,20}$";
 
         #endregion Constants
 
