@@ -10,7 +10,8 @@
         interactivity:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
-        Title="MainWindow" Height="Auto" Width="Auto" ResizeMode="CanResizeWithGrip" SizeToContent="WidthAndHeight">
+        Title="Messenger" Icon="Themes/ResourceDictionaries/Images/AppIcon2.ico" 
+        Height="Auto" Width="Auto" ResizeMode="CanResizeWithGrip" SizeToContent="WidthAndHeight">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModel:ConnectionViewModel}">
             <view:ConnectionView></view:ConnectionView>
@@ -25,20 +26,5 @@
             <view:GroupChatView></view:GroupChatView>
         </DataTemplate>
     </Window.Resources>
-    <!--<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding SelectedView}"/>
-        <view:ConnectionView Visibility="{Binding ConnectionVisibility}" ></view:ConnectionView>
-        <view:ChatView Grid.Row="1" Visibility="{Binding ChatVisibility}"></view:ChatView>
-        <view:EventLogView Grid.Row="0" Grid.Column="1" Visibility="{Binding EventLogVisibility}"></view:EventLogView>
-        <view:GroupChatView Grid.Row="1" Grid.Column="1" Visibility="{Binding GroupChatVisibility}"></view:GroupChatView>
-    </Grid>-->
     <ContentControl Content="{Binding SelectedView}"/>
 </Window>

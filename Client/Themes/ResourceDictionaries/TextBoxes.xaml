@@ -46,8 +46,9 @@
                             <Setter Property="Foreground" Value="DimGray"/>
                         </Trigger>
                         <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
-                                <Setter Property="Background" TargetName="border" Value="#FF1E1E1E"/>
-                                <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Background" TargetName="border" Value="#FF1E1E1E"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="CaretBrush" Value="White"/>
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

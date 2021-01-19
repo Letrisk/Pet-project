@@ -2,6 +2,7 @@
              x:Name="ChatV"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Pet_Project.View"
@@ -14,60 +15,67 @@
              d:DataContext="{d:DesignInstance viewModel:ChatViewModel}"
              Style="{StaticResource PrimaryControlStyle}">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.2*"></RowDefinition>
-            <RowDefinition Height="0.13*"></RowDefinition>
-            <RowDefinition Height="0.1*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="0.2*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.14*"></ColumnDefinition>
-            <ColumnDefinition Width="0.14*"></ColumnDefinition>
-            <ColumnDefinition Width="0.8*"></ColumnDefinition>
-            <ColumnDefinition Width="0.11*"></ColumnDefinition>
-            <ColumnDefinition Width="0.2*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Command="{Binding OpenEventLogCommand}" Style="{StaticResource PrimaryButtonStyle}" 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"></RowDefinition>
+                <RowDefinition Height="0.13*"></RowDefinition>
+                <RowDefinition Height="0.1*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="0.2*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.14*"></ColumnDefinition>
+                <ColumnDefinition Width="0.14*"></ColumnDefinition>
+                <ColumnDefinition Width="0.8*"></ColumnDefinition>
+                <ColumnDefinition Width="0.11*"></ColumnDefinition>
+                <ColumnDefinition Width="0.2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="buttonEventLog" Grid.Row="0" Grid.Column="0" Command="{Binding OpenEventLogCommand}" Style="{StaticResource PrimaryButtonStyle}" 
                 Margin="5,5,5,5" Content="Event Log"></Button>
-        <Button x:Name="buttonGroupChat" Grid.Row="0" Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Margin="5,5,5,5"
+            <Button x:Name="buttonGroupChat" Grid.Row="0" Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Margin="5,5,5,5"
                 Content="Add group" Command="{Binding OpenGroupChatCommand}"></Button>
-        <CheckBox Grid.Row="0" Grid.Column="3" Style="{StaticResource SliderCheckBox}" IsChecked="{Binding IsDarkTheme}" 
+            <CheckBox Grid.Row="0" Grid.Column="3" Style="{StaticResource SliderCheckBox}" IsChecked="{Binding IsDarkTheme}" 
                   Command="{Binding ChangeStyleCommand}" Margin="0,10,0,10"></CheckBox>
-        <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="4" Style="{StaticResource PrimaryButtonStyle}" 
+            <Button x:Name="buttonStop" Grid.Row="0" Grid.Column="4" Style="{StaticResource PrimaryButtonStyle}" 
                 Margin="5,5,5,5" Content="Disconnect" Command="{Binding StopCommand}"></Button>
-        <TextBox  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,10,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Clients:"></TextBox>
-        <Label Grid.Row="1" Grid.Column="2" Style="{StaticResource ClientLabelStyle}" 
+            <TextBox  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,10,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Clients:"></TextBox>
+            <Label Grid.Row="1" Grid.Column="2" Style="{StaticResource ClientLabelStyle}" 
                 VerticalContentAlignment="Top"/>
-        <TextBox Grid.Row="1" Grid.Column="2" Margin="50,5,0,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="{Binding ConnectionParametres}" FontSize="18"/>
-        <TextBox Grid.Row="1" Grid.Column="4" Margin="5,5,5,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Groups:" FontSize="18"/>
-        <ListBox x:Name="groups" Grid.Row="2" Grid.Column="4" Grid.RowSpan="3" Style="{StaticResource PrimaryListBoxStyle}"
+            <TextBox Grid.Row="1" Grid.Column="2" Margin="50,5,0,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="{Binding ConnectionParametres}" FontSize="18"/>
+            <TextBox Grid.Row="1" Grid.Column="4" Margin="5,5,5,5" Style="{StaticResource ReadOnlyTextBoxStyle}" Text="Groups:" FontSize="18"/>
+            <ListBox x:Name="groups" Grid.Row="2" Grid.Column="4" Grid.RowSpan="3" Style="{StaticResource PrimaryListBoxStyle}"
                  ItemContainerStyle="{StaticResource GroupListBoxItemStyle}"
                  ItemsSource="{Binding GroupsList}"
                  SelectedValue="{Binding SelectedClient}" IsSynchronizedWithCurrentItem="True"
                  Margin="5,5,5,5">
-        </ListBox>
-        <ListBox x:Name="onlineClients" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
+            </ListBox>
+            <ListBox x:Name="onlineClients" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
                  ItemContainerStyle="{StaticResource ListBoxItemStyle}"
                  ItemsSource="{Binding OnlineClients}"
-                 SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True" 
+                 SelectedValue="{Binding CurrentTarget}" IsSynchronizedWithCurrentItem="True"
                  Margin="5,5,10,165">
-        </ListBox>
-        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ReadOnlyTextBoxStyle}" 
+            </ListBox>
+            <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ReadOnlyTextBoxStyle}" 
                Text="Offline Clients:" Margin="5,120,10,131"></TextBox>
-        <ListBox x:Name="messagesList" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
+            <ListBox x:Name="messagesList" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}" 
                  ItemContainerStyle="{StaticResource ListBoxItemStyle}"
-                 ItemsSource="{Binding ChatMessages}" Margin="5,5,5,5"></ListBox>
-        <ListBox Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}"
+                 ItemsSource="{Binding ChatMessages}" Margin="5,5,5,5">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ScrollViewer VerticalAlignment="{Binding Bottom}">
+                        </ScrollViewer>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ListBox Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Style="{StaticResource PrimaryListBoxStyle}"
                  ItemContainerStyle="{StaticResource ClientListBoxItemStyle}"
                  Margin="5,5,5,5"
                  ItemsSource="{Binding ClientsCollection}" 
                  SelectedValue="{Binding SelectedClient}" IsSynchronizedWithCurrentItem="True">
-        </ListBox>
-        <TextBox x:Name="message" Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Margin="0, 5, 5, 5" Tag="Write something..."
+            </ListBox>
+            <TextBox x:Name="message" Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Margin="0, 5, 5, 5" Tag="Write something..."
                  Style="{StaticResource MessageTextBoxStyle}" 
                  Text="{Binding CurrentMessage}"></TextBox>
-        <Button x:Name="buttonSend" Grid.Row="4" Grid.Column="3" Content="Send" Style="{StaticResource SendButtonStyle}" 
+            <Button x:Name="buttonSend" Grid.Row="4" Grid.Column="3" Content="Send" Style="{StaticResource SendButtonStyle}" 
                 Margin="5" Command ="{Binding SendCommand}"></Button>
-    </Grid>
+        </Grid>
 </UserControl>

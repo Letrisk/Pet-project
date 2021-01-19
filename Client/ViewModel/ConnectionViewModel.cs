@@ -15,7 +15,7 @@
         #region Constants
 
         const string ADDRESS_FORMAT = @"\b\d{1,3}.\b\d{1,3}.\b\d{1,3}.\b\d{1,3}\b";
-        const string PORT_FORMAT = @"\d{1,5}";
+        const string PORT_FORMAT = @"\b\d{1,5}\b";
         const string LOGIN_FORMAT = @"^\w{1,20}$";
 
         #endregion Constants
@@ -129,7 +129,7 @@
 
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"{ex.Message}");
+                    GuideText = ex.Message;
                 } 
             }
             else

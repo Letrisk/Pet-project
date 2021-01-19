@@ -104,8 +104,8 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" FontSize="14" Text="{Binding Source}"/>
-                            <ScrollViewer  Grid.Row="1"  MaxHeight="200" VerticalScrollBarVisibility="Auto">
-                                <Border x:Name="textBorder" Background="LightGray" CornerRadius="10">
+                            <ScrollViewer  Grid.Row="1"  MaxHeight="200" VerticalScrollBarVisibility="Hidden">
+                                <Border x:Name="textBorder" Grid.Row="1" Background="LightGray" CornerRadius="10">
                                     <TextBlock Text="{Binding Text}" MaxWidth="250" TextWrapping="Wrap" Margin="5,0,5,0"/>
                                 </Border>
                             </ScrollViewer>

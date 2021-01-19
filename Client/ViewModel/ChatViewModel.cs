@@ -287,34 +287,38 @@
 
         private void HandleConnectionReceived(object sender, ConnectionReceivedEventArgs e)
         {
-                Client focusedClient = SelectedClient;
+            Client focusedClient = SelectedClient;
 
-                if (!Chats.ContainsKey(e.Login))
+            if (ClientsCollection.FirstOrDefault(item => item.Login == e.Login) == default)
+            {
+                Chats.Add(e.Login, new List<Message>());
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    Chats.Add(e.Login, new List<Message>());
-                }
+                    ClientsCollection.Add(new Client(e.Login, true));
+                });
+            }
 
-                if (e.IsConnected)
+            if (e.IsConnected)
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = true;
-                        ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
+                    ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = true;
+                    ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
 
-                        SelectedClient = focusedClient;
-                    });
+                    SelectedClient = focusedClient;
+                });
 
                 }
-                else
+            else
+            {
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = false;
-                        ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
+                    ClientsCollection.FirstOrDefault(item => item.Login == e.Login).IsOnline = false;
+                    ClientsCollection = new ObservableCollection<Client>(ClientsCollection.OrderByDescending(item => item.IsOnline));
 
-                        SelectedClient = focusedClient;
-                    });
-                }
+                    SelectedClient = focusedClient;
+                });
+            }
         }
 
         private void HandleMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -330,6 +334,7 @@
                         {
                             ChatMessages = new ObservableCollection<Message>(Chats[GeneralChat]);
                         });
+
                     }
                 }
                 else

@@ -208,5 +208,8 @@
   <ItemGroup>
     <Resource Include="Themes\ResourceDictionaries\Images\offlineIcon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\ResourceDictionaries\Images\AppIcon2.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
