@@ -19,7 +19,7 @@
                 ServiceBase[] ServicesToRun;
                 ServicesToRun = new ServiceBase[]
                 {
-                new ServiceServer()
+                    new ServiceServer()
                 };
                 ServiceBase.Run(ServicesToRun);
             //}

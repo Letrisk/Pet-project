@@ -11,7 +11,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-    
+
     <Style x:Key="ClientLabelStyle" TargetType="{x:Type Label}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="BitmapEffect">

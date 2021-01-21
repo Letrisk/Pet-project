@@ -33,7 +33,7 @@
 
         public NetworkManager()
         {
-            SettingsManager settingsManager = new SettingsManager("ServerConfig.xml");
+            SettingsManager settingsManager = new SettingsManager("C:\\Users\\VasyutkinKP\\Documents\\GitHub\\Pet-project\\Server\\bin\\Debug\\ServerConfig.xml");
             _transport = settingsManager.Transport;
             _ip = settingsManager.Ip;
             _port = settingsManager.Port;

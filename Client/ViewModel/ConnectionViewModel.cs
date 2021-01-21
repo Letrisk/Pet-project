@@ -25,8 +25,6 @@
         private readonly IConnectionController _connectionController;
         private readonly IEventAggregator _eventAggregator;
 
-        private Visibility _connectionVisibility;
-
         private string _address;
         private string _port;
         private string _login;
@@ -38,12 +36,6 @@
         #endregion Fields
 
         #region Properties
-
-        public Visibility ConnectionVisibility
-        {
-            get => _connectionVisibility;
-            set => SetProperty(ref _connectionVisibility, value);
-        }
 
         public string Address
         {
@@ -98,7 +90,6 @@
             _eventAggregator = eventAggregator;
             _connectionController = connectionController;
 
-            _connectionVisibility = Visibility.Visible;
             _address = "192.168.37.147";
             _port = "65000";
             _guideText = "Enter address and port";
@@ -143,7 +134,6 @@
             if (Regex.IsMatch(Login, LOGIN_FORMAT))
             {
                 _connectionController.Login(Login);
-                ConnectionVisibility = Visibility.Collapsed;
             }
             else
             {
@@ -157,12 +147,12 @@
             {
                 if (string.IsNullOrEmpty(e.Client))
                 {
-                    GuideText = $"Authorize for messaging.\n";
+                    GuideText = $"Authorize for messaging.";
                     IsConnected = true;
                 }
                 else
                 {
-                    GuideText = $"Authorization complete.\n";
+                    GuideText = $"Authorization complete.";
                     _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
                 }
             }
@@ -182,8 +172,6 @@
         {
             Login = String.Empty;
             IsConnected = false;
-
-            ConnectionVisibility = Visibility.Visible;
         }
 
         #endregion Methods

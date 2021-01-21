@@ -37,8 +37,6 @@
         private bool _isErrors;
         private bool _isDarkTheme;
 
-        private Visibility _eventLogVisibility;
-
         #endregion Fields
 
         #region Properties
@@ -114,12 +112,6 @@
             set => SetProperty(ref _isDarkTheme, value);
         }
 
-        public Visibility EventLogVisibility
-        {
-            get => _eventLogVisibility;
-            set => SetProperty(ref _eventLogVisibility, value);
-        }
-
         public DelegateCommand FilterCommand { get; }
 
         public DelegateCommand CancelCommand { get; }
@@ -132,13 +124,11 @@
         {
             _eventLogController = eventLogController;
             _eventAggregator = eventAggregator;
-            eventAggregator.GetEvent<OpenEventLogEventArgs>().Subscribe(HandleOpenEventLog);
             eventAggregator.GetEvent<CloseWindowsEventArgs>().Subscribe(HandleCloseEventlog);
             eventAggregator.GetEvent<ChangeStyleEventArgs>().Subscribe(HandleChangeStyle);
 
             _firstDate = DateTime.Now;
             _secondDate = DateTime.Now;
-            _eventLogVisibility = Visibility.Collapsed;
 
             FilterCommand = new DelegateCommand(ExecuteFilterCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
@@ -165,7 +155,6 @@
 
                     _eventLogController.SendFilterRequest(FirstDate, SecondDate, selectedTypes);
                     _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-                    EventLogVisibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -181,12 +170,6 @@
         private void ExecuteCancelCommand()
         {
             _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-            EventLogVisibility = Visibility.Collapsed;
-        }
-
-        private void HandleOpenEventLog()
-        {
-            EventLogVisibility = Visibility.Visible;
         }
 
         private void HandleCloseEventlog()
@@ -200,7 +183,6 @@
             IsMessages = false;
             IsEvents = false;
             IsErrors = false;
-            EventLogVisibility = Visibility.Collapsed;
         }
 
         private void HandleChangeStyle(bool isDarkTheme)

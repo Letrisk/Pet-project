@@ -46,8 +46,6 @@
         private bool _isDarkTheme;
         private bool _isGroupMessage;
 
-        private Visibility _chatVisibility;
-
         #endregion Fields
 
         #region Properties
@@ -62,12 +60,6 @@
         {
             get => _chats;
             set => SetProperty(ref _chats, value);
-        }
-
-        public Visibility ChatVisibility
-        {
-            get => _chatVisibility;
-            set => SetProperty(ref _chatVisibility, value);
         }
 
         public ObservableCollection<Client> GroupsList
@@ -151,16 +143,12 @@
             _chatMessages = new ObservableCollection<Message>();
             _clientsCollection = new ObservableCollection<Client>();
 
-            _chatVisibility = Visibility.Collapsed;
-
             _chats = new Dictionary<string, List<Message>>();
 
             _counter = 0;
 
             _chatController = chatController;
             _eventAggregator = eventAggregator;
-
-            eventAggregator.GetEvent<OpenChatEventArgs>().Subscribe(HandleOpenChat);
 
             SendCommand = new DelegateCommand(ExecuteSendCommand);
             StopCommand = new DelegateCommand(ExecuteStopCommand);
@@ -220,7 +208,6 @@
             });
 
             Chats.Clear();
-            ChatVisibility = Visibility.Collapsed;
 
             _eventAggregator.GetEvent<CloseWindowsEventArgs>().Publish();
 
@@ -230,7 +217,6 @@
         private void ExecuteOpenEventLogCommand()
         {
             _eventAggregator.GetEvent<OpenEventLogEventArgs>().Publish();
-            ChatVisibility = Visibility.Collapsed;
         }
 
         private void ExecuteOpenGroupChatCommand()
@@ -238,7 +224,6 @@
             ObservableCollection<Client> clients = new ObservableCollection<Client>(ClientsCollection.Select(item => item).Where(item => 
                                                                                     item.Login != GeneralChat && item.Login != EventLog && item.Login != _login));
             _eventAggregator.GetEvent<OpenGroupChatEventArgs>().Publish(clients);
-            ChatVisibility = Visibility.Collapsed;
         }
 
         private void ExecuteChangeStyleCommand()
@@ -257,8 +242,6 @@
             if (e.IsConnected)
             {
                 _login = e.Client;
-
-                ChatVisibility = Visibility.Visible;
 
                 ConnectionParametres = $"Login: {_login}";
 
@@ -420,11 +403,6 @@
                     GroupsList.Add(new Client(group.Key, true));
                 }
             });
-        }
-
-        private void HandleOpenChat()
-        {
-            ChatVisibility = Visibility.Visible;
         }
 
         private void SelectedClientChanged(Client client)

@@ -35,8 +35,6 @@
         private bool _isApplyEnable;
         private bool _isDarkTheme;
 
-        private Visibility _groupChatVisibility;
-
         #endregion Fields
 
         #region Properties
@@ -111,12 +109,6 @@
             set => SetProperty(ref _isDarkTheme, value);
         }
 
-        public Visibility GroupChatVisibility
-        {
-            get => _groupChatVisibility;
-            set => SetProperty(ref _groupChatVisibility, value);
-        }
-
         public DelegateCommand GroupChatCommand { get; }
 
         public DelegateCommand CancelCommand { get; }
@@ -137,7 +129,6 @@
             _clients = new ObservableCollection<Client>();
             _groupClients = new ObservableCollection<Client>();
             _isApplyEnable = false;
-            _groupChatVisibility = Visibility.Collapsed;
 
             GroupChatCommand = new DelegateCommand(ExecuteGroupChatCommand);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
@@ -154,7 +145,6 @@
             {
                 _groupChatController.CreateGroupRequest(_groupName, _groupClients.Select(item => item.Login).ToList());
                 _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-                GroupChatVisibility = Visibility.Collapsed;
             }
             else
             {
@@ -165,13 +155,11 @@
         private void ExecuteCancelCommand()
         {
             _eventAggregator.GetEvent<OpenChatEventArgs>().Publish();
-            GroupChatVisibility = Visibility.Collapsed;
         }
 
         private void HandleOpenGroupChat(ObservableCollection<Client> clients)
         {
             Clients = clients;
-            GroupChatVisibility = Visibility.Visible;
         }
 
         private void HandleCloseGroupChat()
@@ -183,7 +171,6 @@
             });
             GroupName = String.Empty;
             IsApplyEnable = false;
-            GroupChatVisibility = Visibility.Collapsed;
         }
 
         private void HandleChangeStyle(bool isDarkTheme)

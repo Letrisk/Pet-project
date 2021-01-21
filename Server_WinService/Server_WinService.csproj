@@ -59,12 +59,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ServerInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ServerInstaller.Designer.cs">
-      <DependentUpon>ServerInstaller.cs</DependentUpon>
-    </Compile>
     <Compile Include="ServiceServer.cs">
       <SubType>Component</SubType>
     </Compile>
